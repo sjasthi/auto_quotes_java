@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * @author Neil Haggerty This is the main driver class. Run this to run the whole program.        
@@ -8,10 +9,10 @@ import java.sql.SQLException;
 public class Driver {
 
 	public static void main(String[] args) throws SQLException, IOException {
-		Puzzle puzzle1 = new SplitQuote("Hello my name is Neil Haggerty");
-		//Puzzle puzzle1 = new SplitQuote("కళ్ళముందు చీకటుంటే కలత దేనికి మిణుగురంత ఆశ చాలు నడపడానికి");
 		
-		puzzle1.generatePPT();
+		//PuzzleSeries s1 = new PuzzleSeries("SplitQuote", 5);
+		PuzzleSeries s1 = new PuzzleSeries("ScrambleQuote", 5);
+		
 		
 	}
 }

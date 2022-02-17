@@ -8,17 +8,9 @@ public class SplitQuote extends Puzzle {
 	
 	public SplitQuote(String quote) throws SQLException, IOException {
 		super(quote);
-		PPT_FILE_NAME = "SplitQuote.ppt";
-		PUZZLE_TITLE = "Split Quote";
-	}
-	
-	public ArrayList<String> toList(String quote) {
-		ArrayList<String> result = new ArrayList<String>();
-		for(int i = 0; i<quote.length(); i++) {
-			result.add(Character.toString(quote.charAt(i)));
-		}
-		return result;
-	}
+		splitQuote(toList(quote));
+		buildGrid(quoteParts);
+	}	
 	
 	public double getCellCount() {
 		cellCount = 0.0;
@@ -84,6 +76,7 @@ public class SplitQuote extends Puzzle {
 	}
 	
 	public void buildGrid(List<String> list) {
+		getCellCount();
 		grid = new String[rows][columns];
 		Collections.shuffle(quoteParts);
 		int count = 0;
@@ -93,6 +86,24 @@ public class SplitQuote extends Puzzle {
 				count++;
 			}
 		}
+	}
+
+	
+	
+	public String[][] getGrid() {
+		return grid;
+	}
+
+	@Override
+	protected ArrayList<String> buildGrid() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected ArrayList<String> getLetterBank() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
