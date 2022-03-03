@@ -3,7 +3,6 @@ import java.awt.Desktop;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -30,26 +29,17 @@ public class PuzzleSeries {
 	
 	private static String[][] grid;
 	private final int numberOfPuzzles;
-	//private static double table_fontSize = 15.0;
 	private static String PPT_FILE_NAME = "Puzzles.ppt";
 	private static String PUZZLE_TITLE;
 	private static String FONT_NAME = "NATS";
 	private static double GRID_FONT_SIZE = 18.0;
 	private static double TITLE_FONT_SIZE = 24.0;
-	private File quotes = new File("TestEnglish.txt");
-	private String puzzleType;
+	private File quotes = new File("Test.txt");
 	
 	
 	public PuzzleSeries(String puzzleType, int count) throws SQLException, IOException {
 		numberOfPuzzles = count;
-		this.puzzleType = puzzleType;
-		if(puzzleType.equals("SplitQuote")) {
-			PUZZLE_TITLE = "Split Quote";
-			splitQuotePPT();
-		} else if(puzzleType.equals("ScrambleQuote")) {
-			PUZZLE_TITLE = "Scramble Quote";
-			scrambleQuotePPT();
-		}
+		PUZZLE_TITLE = puzzleType;
 	}
 	
 	public void splitQuotePPT() throws SQLException, IOException {
@@ -62,7 +52,7 @@ public class PuzzleSeries {
 		for(int n = 0; n<numberOfPuzzles; n++) {
 			
 			String quote = scan.nextLine();
-			Puzzle puzzle = getNewPuzzle(quote);
+			SplitQuote puzzle = new SplitQuote(quote);
 			grid = puzzle.getGrid();
 			
 			HSLFSlide slide = ppt.createSlide();
@@ -116,8 +106,8 @@ public class PuzzleSeries {
 		scan.close();
 		
 	}
-
-	private void scrambleQuotePPT() throws SQLException, IOException {
+	
+	public void dropQuotePPT() throws SQLException, IOException {
 		Scanner scan = new Scanner(quotes);
 		File ppt_file_name = new File(PPT_FILE_NAME);
 
@@ -127,46 +117,224 @@ public class PuzzleSeries {
 		for(int n = 0; n<numberOfPuzzles; n++) {
 			
 			String quote = scan.nextLine();
-			Puzzle puzzle = getNewPuzzle(quote);
-			ArrayList<String> wordSlots = puzzle.buildGrid();
-			int yOffSet = 0;
+			DropQuote puzzle = new DropQuote(quote);
+			grid = puzzle.getScrambleGrid();
 			
 			HSLFSlide slide = ppt.createSlide();
 			String title_name = PUZZLE_TITLE;
 			createTitle(slide, title_name);
 			createLogo(ppt, slide);
 
-			 
+			HSLFTable table = slide.createTable(puzzle.getRows(), puzzle.getColumns()); 
 			
-			HSLFTable table = slide.createTable(1, puzzle.getLetterBank().size());
-			for(int a = 0; a<puzzle.getLetterBank().size(); a++) {
-				String char_string = puzzle.getLetterBank().get(a);
+			for (int i = 0; i < puzzle.getColumns(); i++) {
+				for (int j = 0; j < puzzle.getRows(); j++) {
+					String char_string = String.valueOf(grid[j][i]);
+					HSLFTableCell cell1 = table.getCell(j, i);
+					
+					cell1.setText(char_string);
+
+					setBorders(cell1);
+					HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+					rt1.setFontFamily(FONT_NAME);
+					rt1.setFontSize(GRID_FONT_SIZE);
+					cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+					cell1.setHorizontalCentered(true);
+				}
+			}
+
+			for (int i = 0; i < puzzle.getColumns(); i++) {
+				table.setColumnWidth(i, puzzle.getCellWidth());
+			}
+
+			for (int i = 0; i < puzzle.getRows(); i++) {
+				table.setRowHeight(i, puzzle.getCellHeight());
+			}
+
+			table.moveTo(puzzle.getSTARTING_X(), puzzle.getSTARTING_Y());
+
+			HSLFTable table2 = slide.createTable(puzzle.getRows(), puzzle.getColumns());
+			grid = puzzle.getPuzzleGrid();
+			for (int i = 0; i < puzzle.getColumns(); i++) {
+				for (int j = 0; j < puzzle.getRows(); j++) {
+					String char_string = String.valueOf(grid[j][i]);
+					if(char_string.equals(" ")) {
+						HSLFTableCell cell1 = table2.getCell(j, i);
+						
+						cell1.setText(" ");
+						cell1.setFillColor(Color.BLACK);
+
+						setBorders(cell1);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(FONT_NAME);
+						rt1.setFontSize(GRID_FONT_SIZE);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					} else {
+						HSLFTableCell cell1 = table2.getCell(j, i);
+
+						cell1.setText(" ");
+
+						setBorders(cell1);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(FONT_NAME);
+						rt1.setFontSize(GRID_FONT_SIZE);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					}
+				}
+			}
+
+			for (int i = 0; i < puzzle.getColumns(); i++) {
+				table2.setColumnWidth(i, puzzle.getCellWidth());
+			}
+
+			for (int i = 0; i < puzzle.getRows(); i++) {
+				table2.setRowHeight(i, puzzle.getCellHeight());
+			}
+
+			table2.moveTo(puzzle.getSTARTING_X(), puzzle.getSTARTING_Y()*4);
+
+			
+			createSlideNumber(slide, puzzle_slide_no);
+			puzzle_slide_no++;
+		}
+		
+		FileOutputStream out = new FileOutputStream(ppt_file_name);
+		ppt.write(out);
+		out.close();
+
+		System.out.println("Puzzle is created: " + ppt_file_name);
+		System.out.println("Loading...");
+		Desktop.getDesktop().browse(ppt_file_name.toURI());
+		System.out.println("Done.");
+
+		ppt.close();
+		scan.close();
+		
+	}
+	
+	public void stripperQuote() throws IOException, SQLException {
+		
+		Scanner scan = new Scanner(quotes);
+		File ppt_file_name = new File(PPT_FILE_NAME);
+
+		int puzzle_slide_no = 1;
+		HSLFSlideShow ppt = new HSLFSlideShow();
+		
+		
+		for(int n = 0; n<numberOfPuzzles; n++) {
+
+			String quote = scan.nextLine();
+			StripperQuote puzzle = new StripperQuote(quote);
+		
+			HSLFSlide slide = ppt.createSlide();
+			String title_name = PUZZLE_TITLE;
+			createTitle(slide, title_name);
+			createLogo(ppt, slide);
+
+
+
+			HSLFTable table = slide.createTable(1, puzzle.getLength());
+			for(int a = 0; a<puzzle.getBaseLength(); a++) {
+				String char_string = puzzle.getBaseChars().get(a);
 				HSLFTableCell cell1 = table.getCell(0, a);
-				
+
 				cell1.setText(char_string);
 
-				//setBorders(cell1);
+				setBorders(cell1);
 				HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
 				rt1.setFontFamily(FONT_NAME);
 				rt1.setFontSize(GRID_FONT_SIZE);
 				cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
 				cell1.setHorizontalCentered(true);
 			}
-			for (int b = 0; b < puzzle.getLetterBank().size(); b++) {
-				table.setColumnWidth(b, 10);
+			for (int b = 0; b < puzzle.getBaseLength(); b++) {
+				table.setColumnWidth(b, puzzle.getCellWidth());
 			}
 
 
 			table.setRowHeight(0, puzzle.getCellHeight());
-			
 
-			table.moveTo(puzzle.getSTARTING_X(), puzzle.getSTARTING_Y() + yOffSet);
-			yOffSet += 50;
+
+			table.moveTo(puzzle.getSTARTING_X(), puzzle.getSTARTING_Y());
+
+
+			createSlideNumber(slide, puzzle_slide_no);
+			puzzle_slide_no++;
+		}
+
+		FileOutputStream out = new FileOutputStream(ppt_file_name);
+		ppt.write(out);
+		out.close();
+
+		System.out.println("Puzzle is created: " + ppt_file_name);
+		System.out.println("Loading...");
+		Desktop.getDesktop().browse(ppt_file_name.toURI());
+		System.out.println("Done.");
+
+		ppt.close();
+		scan.close();
+		
+	}
+
+	public void scrambleQuotePPT() throws SQLException, IOException {
+		Scanner scan = new Scanner(quotes);
+		File ppt_file_name = new File(PPT_FILE_NAME);
+
+		int puzzle_slide_no = 1;
+		HSLFSlideShow ppt = new HSLFSlideShow();
+		
+		for(int n = 0; n<numberOfPuzzles; n++) {
 			
+			String quote = scan.nextLine();
+			ScrambleQuote puzzle = new ScrambleQuote(quote);
+			ArrayList<String> wordSlots = puzzle.getBlankWords();
+			int yOffSet = 0;
+			int xOffSet = 0;
+			
+			HSLFSlide slide = ppt.createSlide();
+			String title_name = PUZZLE_TITLE;
+			createTitle(slide, title_name);
+			createLogo(ppt, slide);
+
+			HSLFTable table = slide.createTable(puzzle.getRows(), puzzle.getColumns());
+			grid = puzzle.getBankGrid();
+			for (int i = 0; i < puzzle.getRows(); i++) {
+				for (int j = 0; j < puzzle.getColumns(); j++) {
+					String char_string = String.valueOf(grid[i][j]);
+					HSLFTableCell cell1 = table.getCell(i, j);
+
+					cell1.setText(char_string);
+
+					//setBorders(cell1);
+					HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+					rt1.setFontFamily(FONT_NAME);
+					rt1.setFontSize(GRID_FONT_SIZE);
+					cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+					cell1.setHorizontalCentered(true);
+				}
+				for (int b = 0; b < puzzle.getColumns(); b++) {
+					table.setColumnWidth(b, puzzle.getCellWidth());
+				}
+
+				for (int b = 0; b < puzzle.getRows(); b++) {
+					table.setRowHeight(b, puzzle.getCellHeight());
+				}
+
+				table.moveTo(puzzle.getSTARTING_X(), puzzle.getSTARTING_Y() + yOffSet);
+
+				yOffSet += 45;
+			}
+			
+			yOffSet += 45;
+			int currentWordLength = wordSlots.get(0).length();
+			int nextWordLength;
 			for(int i = 0; i<wordSlots.size(); i++) {
 				table = slide.createTable(1, wordSlots.get(i).length());
-				for(int a = 0; a<wordSlots.get(i).length(); a++) {
-					String char_string = String.valueOf(wordSlots.get(i).charAt(a));
+				String word = wordSlots.get(i);
+				for(int a = 0; a<word.length(); a++) {
+					String char_string = String.valueOf(word.charAt(a));
 					HSLFTableCell cell1 = table.getCell(0, a);
 					
 					cell1.setText(char_string);
@@ -186,8 +354,23 @@ public class PuzzleSeries {
 				table.setRowHeight(0, puzzle.getCellHeight());
 				
 
-				table.moveTo(puzzle.getSTARTING_X(), puzzle.getSTARTING_Y() + yOffSet);
-				yOffSet += 50;
+				table.moveTo(puzzle.getSTARTING_X() + xOffSet, puzzle.getSTARTING_Y() + yOffSet);
+				
+				if((i+1)<wordSlots.size()) {
+					nextWordLength = wordSlots.get(i+1).length(); 
+					if(currentWordLength + nextWordLength > 20) {
+						yOffSet += 45;
+						xOffSet = 0;
+						currentWordLength = nextWordLength;
+					} else {
+						xOffSet = (currentWordLength * 32);
+						currentWordLength += nextWordLength;
+					}
+					
+				} else {
+					yOffSet += 45;
+				}
+				
 			}
 			
 
@@ -308,16 +491,6 @@ public class PuzzleSeries {
 		cell.setBorderColor(BorderEdge.left, Color.black);
 	}
 
-	private Puzzle getNewPuzzle(String quote) throws SQLException, IOException {
-		if(puzzleType.equals("SplitQuote")) {
-			Puzzle p1 = new SplitQuote(quote);
-			return p1;
-		} else if(puzzleType.equals("ScrambleQuote")) {
-			Puzzle p1 = new ScrambleQuote(quote);
-			return p1;
-		}
-		return null;
-	}
-
+	
 	
 }

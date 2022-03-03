@@ -2,14 +2,33 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
-public class SplitQuote extends Puzzle {
+public class SplitQuote {
+	
+	private API api = new API();
+	private double cellCount;
+	private int length;
+	private int rows;
+	private int columns;
+	private int cell_width;
+	private int cell_height;
+	private ArrayList<String> logicalChars;
+	private ArrayList<String> quoteParts = new ArrayList<String>();
+	private String[][] grid;
+	private static int STARTING_X = 40;
+	private static int STARTING_Y = 120;
+	private boolean hasSpaces = false;
 	
 	public SplitQuote(String quote) throws SQLException, IOException {
-		super(quote);
-		splitQuote(toList(quote));
-		buildGrid(quoteParts);
+		if(hasSpaces) {
+			length = api.getLength(quote);
+			logicalChars = api.getLogicalChars(quote);
+		} else {
+			length = api.getLength(removeSpaces(quote));
+			logicalChars = api.getLogicalChars(removeSpaces(quote));
+		}
+		splitQuote(logicalChars);
+		buildGrid();
 	}	
 	
 	public double getCellCount() {
@@ -54,8 +73,17 @@ public class SplitQuote extends Puzzle {
 		return cellCount;
 	}
 	
-	public void splitQuote(List<String> list) {
-		
+	private String removeSpaces(String quote) {
+		String newString = "";
+		int count = quote.length();
+		for(int i = 0; i<count; i++) {
+			if(!(quote.charAt(i) == ' '))
+				newString = newString + String.valueOf(quote.charAt(i));
+		}
+		return newString;
+	}	
+	
+	public void splitQuote(ArrayList<String> list) {		
 		double chunks = Math.ceil(length/getCellCount());
 		int countLeft = length;
 		double index = getCellCount();
@@ -75,7 +103,7 @@ public class SplitQuote extends Puzzle {
 		}	
 	}
 	
-	public void buildGrid(List<String> list) {
+	public void buildGrid() {
 		getCellCount();
 		grid = new String[rows][columns];
 		Collections.shuffle(quoteParts);
@@ -87,23 +115,34 @@ public class SplitQuote extends Puzzle {
 			}
 		}
 	}
-
-	
 	
 	public String[][] getGrid() {
 		return grid;
 	}
 
-	@Override
-	protected ArrayList<String> buildGrid() {
-		// TODO Auto-generated method stub
-		return null;
+	public int getRows() {
+		return rows;
+	}
+	
+	public int getColumns() {
+		return columns;
+	}
+	
+	public int getCellWidth() {
+		return cell_width;
 	}
 
-	@Override
-	protected ArrayList<String> getLetterBank() {
-		// TODO Auto-generated method stub
-		return null;
+	public int getCellHeight() {
+		return cell_height;
+	}
+
+	public int getSTARTING_X() {
+		return STARTING_X;
+	}
+
+
+	public int getSTARTING_Y() {
+		return STARTING_Y;
 	}
 
 }

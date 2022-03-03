@@ -86,6 +86,32 @@ public class API {
 
 		return quote_array;
 	}
+	
+	public ArrayList<String> getBaseChars(String quote) throws SQLException, UnsupportedEncodingException {
+
+		ArrayList<String> quote_array = new ArrayList<String>();
+
+		String lang = chooseLang(quote);
+		String URL = "http://indic-wp.thisisjava.com/api/getBaseCharacters.php?string="
+				+ URLEncoder.encode(quote, "UTF-8") + "&language='" + lang + "'";
+		String newURL = URL.replaceAll(" ", "%20");
+
+		Client client = Client.create();
+		WebResource resource = client.resource(newURL);
+		String response = resource.get(String.class);
+
+		int index = response.indexOf("{");
+		response = response.substring(index);
+		JSONObject my_object = new JSONObject(response);
+
+		JSONArray json_array = my_object.getJSONArray("data");
+
+		for (int j = 0; j < json_array.length(); j++) {
+			quote_array.add(json_array.getString(j));
+		}
+
+		return quote_array;
+	}
 
 	/**
 	 * @author AutoCap This method retrieves filler characters for each generated
