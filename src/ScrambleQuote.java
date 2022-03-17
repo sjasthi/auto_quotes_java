@@ -14,36 +14,38 @@ import java.util.Collections;
  *
  */
 public class ScrambleQuote {
-	private String[] words;
+	
 	private String[][] bankGrid;
 	private ArrayList<String> letterBank = new ArrayList<String>();
-	private ArrayList<String> blankWords = new ArrayList<String>();
+	private ArrayList<String> logicalChars;
 	private int cell_width;
 	private int cell_height;
 	private int rows = 1;
-	private int columns = 14;
+	private int columns = 20;
 	private static int STARTING_X = 40;
-	private static int STARTING_Y = 40;
+	private static int STARTING_Y = 80;
 	private int length;
+	private int wordCount = 1;
 	private API api = new API();
 	
 	public ScrambleQuote(String quote) throws SQLException, IOException {
 		
 		length = api.getLength(quote);
-		createLetterBank(quote);
-		createBlankWords(quote);
+		logicalChars = api.getLogicalChars(quote);
+		createLetterBank();
+		generateWordCount();
 		
 		cell_width = 30;
 		cell_height = 20;
 	}
 	
-		
-	private void createLetterBank(String quote) throws UnsupportedEncodingException, SQLException {
-		ArrayList<String> tempList = api.getLogicalChars(quote);
+	
+
+	private void createLetterBank() throws UnsupportedEncodingException, SQLException {
 		int index = 0;
-		for(int i = 0; i<tempList.size(); i++) {
-			if(isValid(tempList.get(i).charAt(0))) {
-				letterBank.add(tempList.get(i));
+		for(int i = 0; i<logicalChars.size(); i++) {
+			if(isValid(logicalChars.get(i).charAt(0))) {
+				letterBank.add(logicalChars.get(i));
 				index++;
 			}
 			if(index>columns) {
@@ -68,39 +70,24 @@ public class ScrambleQuote {
 			}
 		}
 	}
+	
+	private void generateWordCount() {
+		for(int i = 0; i<length; i++) {
+			if(logicalChars.get(i).equals(" "))
+				wordCount++;
+		}
+	}
+	
+	public int getWordCount() {
+		return wordCount;
+	}
 
 	public String[][] getBankGrid() {
 		return bankGrid;
 	}
-
-	public void createBlankWords(String quote) throws UnsupportedEncodingException, SQLException {
-		ArrayList<String> tempList = api.getLogicalChars(quote);
-		String tempString = "";
-		for(int i = 0; i<tempList.size(); i++) {
-			tempString += tempList.get(i);
-		}
-		
-		words = tempString.split(" ");
-		for(int i = 0; i<words.length; i++) {
-			String segment = "";
-			for(int n = 0; n<words[i].length(); n++) {
-				if(isValid(words[i].charAt(n))) {
-					segment = segment + " ";
-				} else {
-					segment = segment + String.valueOf(words[i].charAt(n));
-				}
-				
-			}
-			blankWords.add(segment);
-		}
-	}
 	
-	public ArrayList<String> getBlankWords() {
-		return blankWords;
-	}
-	
-	public ArrayList<String> getLetterBank(){
-		return letterBank;
+	public ArrayList<String> getLogicalChars(){
+		return logicalChars;
 	}
 	
 	public int getCellWidth() {

@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,22 +15,39 @@ public class SplitQuote {
 	private int cell_height;
 	private ArrayList<String> logicalChars;
 	private ArrayList<String> quoteParts = new ArrayList<String>();
-	private String[][] grid;
+	private String[][] solutionGrid;
+	private String[][] puzzleGrid;
 	private static int STARTING_X = 40;
 	private static int STARTING_Y = 120;
-	private boolean hasSpaces = false;
+	private boolean hasSpaces = Preferences.hasSpaces;
+	private boolean hasPunctuation = Preferences.hasPunctuation;
 	
 	public SplitQuote(String quote) throws SQLException, IOException {
-		if(hasSpaces) {
-			length = api.getLength(quote);
-			logicalChars = api.getLogicalChars(quote);
-		} else {
-			length = api.getLength(removeSpaces(quote));
-			logicalChars = api.getLogicalChars(removeSpaces(quote));
-		}
+		checkParams(quote);
 		splitQuote(logicalChars);
-		buildGrid();
-	}	
+		buildSolutionGrid();
+		buildPuzzleGrid();
+	}
+	
+	public void checkParams(String quote) throws UnsupportedEncodingException, SQLException {
+		if(hasSpaces) {
+			if(hasPunctuation) {
+				length = api.getLength(quote);
+				logicalChars = api.getLogicalChars(quote);
+			} else {
+				length = api.getLength(removePunctuation(quote));
+				logicalChars = api.getLogicalChars(removePunctuation(quote));
+			}
+		} else {
+			if(hasPunctuation) {
+				length = api.getLength(removeSpaces(quote));
+				logicalChars = api.getLogicalChars(removeSpaces(quote));
+			} else {
+				length = api.getLength(removeSpaces(removePunctuation(quote)));
+				logicalChars = api.getLogicalChars(removeSpaces(removePunctuation(quote)));
+			}
+		}
+	}
 	
 	public double getCellCount() {
 		cellCount = 0.0;
@@ -81,7 +99,34 @@ public class SplitQuote {
 				newString = newString + String.valueOf(quote.charAt(i));
 		}
 		return newString;
-	}	
+	}
+	
+	private String removePunctuation(String quote) {
+		String newString = "";
+		ArrayList<String> punctuation = new ArrayList<String>();
+		punctuation.add("'");
+		punctuation.add(".");
+		punctuation.add("?");
+		punctuation.add("!");
+		punctuation.add(",");
+		punctuation.add("@");
+		punctuation.add("#");
+		punctuation.add("$");
+		punctuation.add("%");
+		punctuation.add("<");
+		punctuation.add(">");
+		punctuation.add("^");
+		punctuation.add("&");
+		punctuation.add("`");
+		punctuation.add("~");
+		
+		int count = quote.length();
+		for(int i = 0; i<count; i++) {
+			if(!(punctuation.contains(String.valueOf(quote.charAt(i)))))
+				newString = newString + String.valueOf(quote.charAt(i));
+		}
+		return newString;
+	}
 	
 	public void splitQuote(ArrayList<String> list) {		
 		double chunks = Math.ceil(length/getCellCount());
@@ -103,21 +148,36 @@ public class SplitQuote {
 		}	
 	}
 	
-	public void buildGrid() {
+	public void buildSolutionGrid() {
 		getCellCount();
-		grid = new String[rows][columns];
-		Collections.shuffle(quoteParts);
+		solutionGrid = new String[rows][columns];
 		int count = 0;
 		for(int i = 0; i<rows; i++) {
 			for(int n = 0; n<columns; n++) {
-				grid[i][n] = quoteParts.get(count);
+				solutionGrid[i][n] = quoteParts.get(count);
 				count++;
 			}
 		}
 	}
 	
-	public String[][] getGrid() {
-		return grid;
+	public void buildPuzzleGrid() {
+		puzzleGrid = new String[rows][columns];
+		Collections.shuffle(quoteParts);
+		int count = 0;
+		for(int i = 0; i<rows; i++) {
+			for(int n = 0; n<columns; n++) {
+				puzzleGrid[i][n] = quoteParts.get(count);
+				count++;
+			}
+		}
+	}
+	
+	public String[][] getSolutionGrid() {
+		return solutionGrid;
+	}
+	
+	public String[][] getPuzzleGrid() {
+		return puzzleGrid;
 	}
 
 	public int getRows() {
