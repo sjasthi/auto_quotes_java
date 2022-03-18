@@ -16,47 +16,58 @@ import java.util.Collections;
 public class ScrambleQuote {
 	
 	private String[][] bankGrid;
+	private String[][] puzzleGrid;
 	private ArrayList<String> letterBank = new ArrayList<String>();
-	private ArrayList<String> logicalChars;
-	private int cell_width;
-	private int cell_height;
+	private ArrayList<String> logicalChars = new ArrayList<String>();
+	private int cell_width = 40;
+	private int cell_height = 30;
 	private int rows = 1;
-	private int columns = 20;
+	private int columns = 16;
 	private static int STARTING_X = 40;
 	private static int STARTING_Y = 80;
-	private int length;
-	private int wordCount = 1;
 	private API api = new API();
+	private static double GRID_FONT_SIZE = Preferences.GRID_FONT_SIZE + 6.0;
 	
 	public ScrambleQuote(String quote) throws SQLException, IOException {
 		
-		length = api.getLength(quote);
-		logicalChars = api.getLogicalChars(quote);
+		generateLogicalChars(quote);
+		createPuzzleGrid();
 		createLetterBank();
-		generateWordCount();
 		
-		cell_width = 30;
-		cell_height = 20;
 	}
-	
-	
+
+	private void generateLogicalChars(String quote) throws UnsupportedEncodingException, SQLException {
+		
+		ArrayList<String> tempList = api.getLogicalChars(quote);
+		String prevChar = tempList.get(0);
+		logicalChars.add(prevChar);
+		for(int i = 1; i<tempList.size(); i++) {
+			if(!(tempList.get(i).equals(prevChar) && tempList.get(i).equals(" "))) {
+				logicalChars.add(tempList.get(i));
+				
+			}
+			prevChar = tempList.get(i);
+		}
+		
+		while(logicalChars.get(0).equals(" ")) {
+			logicalChars.remove(0);
+		}
+		
+		while(logicalChars.get(logicalChars.size()-1).equals(" ")) {
+			logicalChars.remove(logicalChars.size()-1);
+		}
+	}
 
 	private void createLetterBank() throws UnsupportedEncodingException, SQLException {
-		int index = 0;
 		for(int i = 0; i<logicalChars.size(); i++) {
 			if(isValid(logicalChars.get(i).charAt(0))) {
 				letterBank.add(logicalChars.get(i));
-				index++;
-			}
-			if(index>columns) {
-				rows++;
-				index = 0;
 			}
 		}
 		
 		Collections.shuffle(letterBank);
 		
-		index = 0;
+		int index = 0;
 		bankGrid = new String[rows][columns];
 		for(int i = 0; i<rows; i++) {
 			for(int j = 0; j<columns; j++) {
@@ -71,19 +82,36 @@ public class ScrambleQuote {
 		}
 	}
 	
-	private void generateWordCount() {
-		for(int i = 0; i<length; i++) {
-			if(logicalChars.get(i).equals(" "))
-				wordCount++;
+	private void createPuzzleGrid() {
+		int index = 0;
+		for(int i = 0; i<logicalChars.size(); i++) {
+			index++;
+			if(index>columns) {
+				rows++;
+				index = 0;
+			}
 		}
-	}
-	
-	public int getWordCount() {
-		return wordCount;
-	}
+		
+		index = 0;
+		puzzleGrid = new String[rows][columns];
+		for(int i = 0; i<rows; i++) {
+			for(int j = 0; j<columns; j++) {
+				if(index<logicalChars.size()) {
+					puzzleGrid[i][j] = logicalChars.get(index);
+					index++;
+				} else {
+					puzzleGrid[i][j] = " ";
+				}
+			}
+		}
+	} 
 
 	public String[][] getBankGrid() {
 		return bankGrid;
+	}
+	
+	public String[][] getPuzzleGrid() {
+		return puzzleGrid;
 	}
 	
 	public ArrayList<String> getLogicalChars(){
@@ -102,13 +130,8 @@ public class ScrambleQuote {
 		return STARTING_X;
 	}
 
-
 	public int getSTARTING_Y() {
 		return STARTING_Y;
-	}
-	
-	public int getLength() {
-		return length;
 	}
 
 	private boolean isValid(char a) {
@@ -118,7 +141,6 @@ public class ScrambleQuote {
 			return true;
 	}
 
-
 	public int getColumns() {
 		return columns;
 	}
@@ -127,6 +149,8 @@ public class ScrambleQuote {
 		return rows;
 	}
 	
-	
+	public double getGRID_FONT_SIZE() {
+		return GRID_FONT_SIZE;
+	}
 
 }

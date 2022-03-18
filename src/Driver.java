@@ -12,6 +12,7 @@ public class Driver {
 	private static final String TASKLIST = "tasklist";
     private static final String KILL = "taskkill /IM ";
 
+	@SuppressWarnings("resource")
 	public static void main(String[] args) throws Exception {
 		String input;
 		Scanner scan = new Scanner(System.in);
@@ -20,7 +21,7 @@ public class Driver {
 		
 		
 		while(loopExit) {
-			System.out.println("1: Stripper Quote\n2: Drop Quote\n3: Split Quote\n4: Scramle Quote\n5: Exit");
+			System.out.println("1: Stripper Quote\n2: Drop Quote\n3: Split Quote\n4: Scramble Quote\n5: Exit");
 			System.out.println("Enter Selection: ");
 			input = scan.nextLine();
 			
@@ -42,6 +43,7 @@ public class Driver {
 				PuzzleSeries s1 = new PuzzleSeries("Scramble Quote");
 				s1.scrambleQuotePPT();
 			} else if(input.equals("5")) {
+				isRunning(serviceName);
 				loopExit = false;
 				System.out.println("Goodbye");
 			} else {

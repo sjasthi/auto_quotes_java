@@ -3,7 +3,7 @@ import java.awt.Color;
 public class Preferences {
 	public final static String PPT_FILE_NAME = "Puzzles.ppt";
 	public final static String FONT_NAME = "NATS";
-	public final static double GRID_FONT_SIZE = 18.0;
+	public final static double GRID_FONT_SIZE = 12.0;
 	public final static double TITLE_FONT_SIZE = 24.0;
 	public final static boolean hasSpaces = true;
 	public final static boolean hasPunctuation = true;
