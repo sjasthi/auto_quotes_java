@@ -19,6 +19,7 @@ public class SplitQuote {
 	private String[][] puzzleGrid;
 	private static int STARTING_X = 40;
 	private static int STARTING_Y = 120;
+	private static double GRID_FONT_SIZE = Preferences.GRID_FONT_SIZE;
 	private boolean hasSpaces = Preferences.hasSpaces;
 	private boolean hasPunctuation = Preferences.hasPunctuation;
 	
@@ -205,4 +206,7 @@ public class SplitQuote {
 		return STARTING_Y;
 	}
 
+	public double getGRID_FONT_SIZE() {
+		return GRID_FONT_SIZE;
+	}
 }

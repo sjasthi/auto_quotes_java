@@ -27,21 +27,20 @@ public class DropQuote {
 	private static int STARTING_Y = 80;
 	private ArrayList<String> wordList = new ArrayList<String>();
 	private ArrayList<String> letterBank = new ArrayList<String>();
-	private ArrayList<String> logicalChars;
+	private ArrayList<String> logicalChars = new ArrayList<String>();
+	private static double GRID_FONT_SIZE = Preferences.GRID_FONT_SIZE;
 
-	public DropQuote(String quote) throws SQLException, IOException {
-		length = api.getLength(quote);
-		logicalChars = api.getLogicalChars(quote);
+	public DropQuote(String quote) throws SQLException, IOException {	
 		
-		getCellCount();
+		getCellCount(quote);
 		createWordList();
 		createLetterBank();
 		
 		scrambleGrid = new String[rows][columns];
 		puzzleGrid = new String[rows][columns];
 		
-		buildScrambleGrid();
 		buildPuzzleGrid();
+		buildScrambleGrid();
 	}
 	
 	private void createWordList() {
@@ -66,7 +65,9 @@ public class DropQuote {
 		return columns;
 	}
 	
-	private void getCellCount() {
+	private void getCellCount(String quote) throws UnsupportedEncodingException, SQLException {
+		removePunctuation(quote);
+		length = logicalChars.size();
 		cellCount = 0.0;
 		if(length>48) {
 			cellCount = 60.0;
@@ -109,15 +110,53 @@ public class DropQuote {
 	
 
 	private void buildScrambleGrid() throws UnsupportedEncodingException, SQLException {
-		int index = 0;
 		for(int i = 0; i<columns; i++) {
-			for(int j = 0; j<rows; j++) {
-				scrambleGrid[j][i] = letterBank.get(index);
-				index++;
-			}
+			randomizeColumn(i);
+			dropColumn(i);
 		}
 	}
 	
+	private void randomizeColumn(int column) {
+		ArrayList<String> columnChars = new ArrayList<String>();
+		for(int i = 0; i<rows; i++) {
+			String currentChar = puzzleGrid[i][column];
+			columnChars.add(currentChar);
+		}
+		
+		Collections.shuffle(columnChars);
+		
+		for(int i = 0; i<rows; i++) {
+			scrambleGrid[i][column] = columnChars.get(i);
+		}
+		
+	}
+	
+	private void removePunctuation(String quote) throws UnsupportedEncodingException, SQLException {
+		ArrayList<String> tempList = api.getLogicalChars(quote);
+		ArrayList<String> punctuation = new ArrayList<String>();
+		punctuation.add("'");
+		punctuation.add(".");
+		punctuation.add("?");
+		punctuation.add("!");
+		punctuation.add(",");
+		punctuation.add("@");
+		punctuation.add("#");
+		punctuation.add("$");
+		punctuation.add("%");
+		punctuation.add("<");
+		punctuation.add(">");
+		punctuation.add("^");
+		punctuation.add("&");
+		punctuation.add("`");
+		punctuation.add("~");
+		
+		for(int i = 0; i<tempList.size(); i++) {
+			if(!punctuation.contains(tempList.get(i))) {
+				logicalChars.add(tempList.get(i));
+			}
+		}
+	}
+
 	private void buildPuzzleGrid() {
 		int index = 0;
 		for(int i = 0; i<rows; i++) {
@@ -138,6 +177,42 @@ public class DropQuote {
 			letterBank.add(" ");
 		}
 		Collections.shuffle(letterBank);
+	}
+	
+	private void dropColumn(int column) {
+		int cell1, cell2;
+		while(!columnInOrder(column)) {
+			cell1 = rows-1;
+			cell2 = 0;
+			while(!scrambleGrid[cell1][column].equals(" ")) {
+				cell1--;
+			}
+			while(scrambleGrid[cell2][column].equals(" ")) {
+				cell2++;
+			}
+			swapCell(column, cell1, cell2);
+		}
+	}
+	
+	private boolean columnInOrder(int column) {
+		boolean result = true;
+		
+		String currentCell = scrambleGrid[rows-1][column];
+		for(int i = 2; i<=rows; i++) {
+			String nextCell = scrambleGrid[rows-i][column];
+			if(currentCell.equals(" ")) {
+				if(!nextCell.equals(" "))
+					result = false;
+			}
+			currentCell = nextCell;
+		}
+		return result;
+	}
+
+	private void swapCell(int column, int row1, int row2) {
+		String temp = scrambleGrid[row1][column];
+		scrambleGrid[row1][column] = scrambleGrid[row2][column];
+		scrambleGrid[row2][column] = temp;
 	}
 	
 	public int getCellWidth() {
@@ -163,6 +238,10 @@ public class DropQuote {
 	
 	public String[][] getPuzzleGrid() {
 		return puzzleGrid;
+	}
+	
+	public double getGRID_FONT_SIZE() {
+		return GRID_FONT_SIZE;
 	}
 
 }
