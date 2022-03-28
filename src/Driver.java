@@ -28,20 +28,20 @@ public class Driver {
 			
 			if(input.equals("1")) {
 				isRunning(serviceName);
-				PuzzleSeries s1 = new PuzzleSeries("Stripper Quote");
-				s1.stripperQuote();
+				PPTGenerator s1 = new PPTGenerator("Stripper Quote");
+				s1.createStripperQuote();
 			} else if(input.equals("2")) {
 				isRunning(serviceName);
-				PuzzleSeries s1 = new PuzzleSeries("Drop Quote");
-				s1.dropQuotePPT();
+				PPTGenerator s1 = new PPTGenerator("Drop Quote");
+				s1.createDropQuote();
 			} else if(input.equals("3")) {
 				isRunning(serviceName);
-				PuzzleSeries s1 = new PuzzleSeries("Split Quote");
-				s1.splitQuotePPT();
+				PPTGenerator s1 = new PPTGenerator("Split Quote");
+				s1.createSplitQuote();
 			} else if(input.equals("4")) {
 				isRunning(serviceName);
-				PuzzleSeries s1 = new PuzzleSeries("Scramble Quote");
-				s1.scrambleQuotePPT();
+				PPTGenerator s1 = new PPTGenerator("Scramble Quote");
+				s1.createScrambleQuote();
 			} else if(input.equals("5")) {
 				isRunning(serviceName);
 				loopExit = false;

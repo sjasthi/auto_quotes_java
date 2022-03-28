@@ -6,63 +6,61 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * 
- */
-
-/**
  * @author neilh
  *
  */
 public class DropQuote {
-	
+
 	class Preferences {
 		public final static String PPT_FILE_NAME = "Puzzles.ppt";
+		public final static String TITLE = "Drop Quote";
 		public final static String FONT_NAME = "NATS";
-		public final static double GRID_FONT_SIZE = 12.0;
+		public final static double GRID_FONT_SIZE = 18.0;
 		public final static double TITLE_FONT_SIZE = 24.0;
-		public final static boolean hasSpaces = true;
-		public final static boolean hasPunctuation = true;
-		public static final int PUZZLE_COUNT = 5;
-		public static final Color FILL_COLOR = Color.BLUE; 
-		public static final Color TEXT_COLOR = Color.BLUE;
-		public static final Color TITLE_COLOR = Color.BLUE;
-		public static final Color GRID_COLOR = Color.BLUE;
-		public static final Color SLIDE_NUMBER_COLOR = Color.BLUE;
-		public static final boolean HAS_BOARDERS = true;
+		public static double CELL_COUNT;
+		public final static boolean HAS_SPACES = true;
+		public final static boolean HAS_PUNCTUATION = true;
+		public final static boolean HAS_BOARDERS = true;
+		public final static Color FILL_COLOR = Color.BLUE; 
+		public final static Color TEXT_COLOR = Color.BLUE;
+		public final static Color TITLE_COLOR = Color.BLUE;
+		public final static Color GRID_COLOR = Color.BLUE;
+		public final static Color SLIDE_NUMBER_COLOR = Color.BLUE;
+		public final static int PUZZLE_COUNT = 5;
+		public final static int STARTING_X = 40;
+		public final static int STARTING_Y = 80;
+		public static int LENGTH;
+		public static int ROWS;
+		public static int COLUMNS;
+		public static int CELL_WIDTH;
+		public static int CELL_HEIGHT;
 	}
 	
 	private API api = new API();
 	private String[][] scrambleGrid;
 	private String[][] puzzleGrid;
-	private double cellCount;
-	private int length;
-	private int rows;
-	private int columns;
-	private int cell_width;
-	private int cell_height; 
-	private static int STARTING_X = 40;
-	private static int STARTING_Y = 80;
+	 
+	
 	private ArrayList<String> wordList = new ArrayList<String>();
 	private ArrayList<String> letterBank = new ArrayList<String>();
 	private ArrayList<String> logicalChars = new ArrayList<String>();
-	private static double GRID_FONT_SIZE = Preferences.GRID_FONT_SIZE;
-
+	
 	public DropQuote(String quote) throws SQLException, IOException {	
 		
-		getCellCount(quote);
+		initializeCellCount(quote);
 		createWordList();
 		createLetterBank();
 		
-		scrambleGrid = new String[rows][columns];
-		puzzleGrid = new String[rows][columns];
+		scrambleGrid = new String[Preferences.ROWS][Preferences.COLUMNS];
+		puzzleGrid = new String[Preferences.ROWS][Preferences.COLUMNS];
 		
 		buildPuzzleGrid();
 		buildScrambleGrid();
 	}
 	
 	private void createWordList() {
-		for(int i = 0; i<cellCount; i++) {
-			if(i<length) {
+		for(int i = 0; i<Preferences.CELL_COUNT; i++) {
+			if(i<Preferences.LENGTH) {
 				wordList.add(logicalChars.get(i));
 			} else {
 				wordList.add(" ");
@@ -74,60 +72,52 @@ public class DropQuote {
 		return wordList;
 	}
 	
-	public int getRows() {
-		return rows;
-	}
-	
-	public int getColumns() {
-		return columns;
-	}
-	
-	private void getCellCount(String quote) throws UnsupportedEncodingException, SQLException {
+	private void initializeCellCount(String quote) throws UnsupportedEncodingException, SQLException {
 		removePunctuation(quote);
-		length = logicalChars.size();
-		cellCount = 0.0;
-		if(length>48) {
-			cellCount = 60.0;
-			rows = 6;
-			columns = 10;
-			cell_width = 60;
-			cell_height = 25;
-		} else if(length>42) {
-			cellCount = 48.0;
-			rows = 6;
-			columns = 8;
-			cell_width = 80;
-			cell_height = 25;
-		} else if(length>30) {
-			cellCount = 42.0;
-			rows = 6;
-			columns = 7;
-			cell_width = 90;
-			cell_height = 25;
-		} else if(length>24) {
-			cellCount = 30.0;
-			rows = 5;
-			columns = 6;
-			cell_width = 100;
-			cell_height = 40;
-		} else if(length>15) {
-			cellCount = 24.0;
-			rows = 4;
-			columns = 6;
-			cell_width = 100;
-			cell_height = 50;
+		Preferences.LENGTH = logicalChars.size();
+		Preferences.CELL_COUNT = 0.0;
+		if(Preferences.LENGTH>48) {
+			Preferences.CELL_COUNT = 60.0;
+			Preferences.ROWS = 6;
+			Preferences.COLUMNS = 10;
+			Preferences.CELL_WIDTH = 60;
+			Preferences.CELL_HEIGHT = 35;
+		} else if(Preferences.LENGTH>42) {
+			Preferences.CELL_COUNT = 48.0;
+			Preferences.ROWS = 6;
+			Preferences.COLUMNS = 8;
+			Preferences.CELL_WIDTH = 80;
+			Preferences.CELL_HEIGHT = 35;
+		} else if(Preferences.LENGTH>30) {
+			Preferences.CELL_COUNT = 42.0;
+			Preferences.ROWS = 6;
+			Preferences.COLUMNS = 7;
+			Preferences.CELL_WIDTH = 90;
+			Preferences.CELL_HEIGHT = 35;
+		} else if(Preferences.LENGTH>24) {
+			Preferences.CELL_COUNT = 30.0;
+			Preferences.ROWS = 5;
+			Preferences.COLUMNS = 6;
+			Preferences.CELL_WIDTH = 100;
+			Preferences.CELL_HEIGHT = 50;
+		} else if(Preferences.LENGTH>15) {
+			Preferences.CELL_COUNT = 24.0;
+			Preferences.ROWS = 4;
+			Preferences.COLUMNS = 6;
+			Preferences.CELL_WIDTH = 100;
+			Preferences.CELL_HEIGHT = 60;
 		} else {
-			cellCount = 2.0;
-			rows = 1;
-			columns = 2;
-			cell_width = 280;
-			cell_height = 180;
+			Preferences.CELL_COUNT = 2.0;
+			Preferences.ROWS = 1;
+			Preferences.COLUMNS = 2;
+			Preferences.CELL_WIDTH = 280;
+			Preferences.CELL_HEIGHT = 180;
 		}
 	}
 	
 
 	private void buildScrambleGrid() throws UnsupportedEncodingException, SQLException {
-		for(int i = 0; i<columns; i++) {
+		for(int i = 0; i<Preferences.COLUMNS; i++) {
 			randomizeColumn(i);
 			dropColumn(i);
 		}
@@ -135,14 +125,14 @@ public class DropQuote {
 	
 	private void randomizeColumn(int column) {
 		ArrayList<String> columnChars = new ArrayList<String>();
-		for(int i = 0; i<rows; i++) {
+		for(int i = 0; i<Preferences.ROWS; i++) {
 			String currentChar = puzzleGrid[i][column];
 			columnChars.add(currentChar);
 		}
 		
 		Collections.shuffle(columnChars);
 		
-		for(int i = 0; i<rows; i++) {
+		for(int i = 0; i<Preferences.ROWS; i++) {
 			scrambleGrid[i][column] = columnChars.get(i);
 		}
 		
@@ -176,8 +166,8 @@ public class DropQuote {
 
 	private void buildPuzzleGrid() {
 		int index = 0;
-		for(int i = 0; i<rows; i++) {
-			for(int j = 0; j<columns; j++) {
+		for(int i = 0; i<Preferences.ROWS; i++) {
+			for(int j = 0; j<Preferences.COLUMNS; j++) {
 				puzzleGrid[i][j] = wordList.get(index);
 				index++;
 			}
@@ -190,7 +180,7 @@ public class DropQuote {
 			letterBank.add(logicalChars.get(i));
 			index++;
 		}
-		for(int i = index; i<cellCount; i++) {
+		for(int i = index; i<Preferences.CELL_COUNT; i++) {
 			letterBank.add(" ");
 		}
 		Collections.shuffle(letterBank);
@@ -199,7 +189,7 @@ public class DropQuote {
 	private void dropColumn(int column) {
 		int cell1, cell2;
 		while(!columnInOrder(column)) {
-			cell1 = rows-1;
+			cell1 = Preferences.ROWS-1;
 			cell2 = 0;
 			while(!scrambleGrid[cell1][column].equals(" ")) {
 				cell1--;
@@ -214,9 +204,9 @@ public class DropQuote {
 	private boolean columnInOrder(int column) {
 		boolean result = true;
 		
-		String currentCell = scrambleGrid[rows-1][column];
-		for(int i = 2; i<=rows; i++) {
-			String nextCell = scrambleGrid[rows-i][column];
+		String currentCell = scrambleGrid[Preferences.ROWS-1][column];
+		for(int i = 2; i<=Preferences.ROWS; i++) {
+			String nextCell = scrambleGrid[Preferences.ROWS-i][column];
 			if(currentCell.equals(" ")) {
 				if(!nextCell.equals(" "))
 					result = false;
@@ -232,23 +222,6 @@ public class DropQuote {
 		scrambleGrid[row2][column] = temp;
 	}
 	
-	public int getCellWidth() {
-		return cell_width;
-	}
-
-	public int getCellHeight() {
-		return cell_height;
-	}
-
-	public int getSTARTING_X() {
-		return STARTING_X;
-	}
-
-
-	public int getSTARTING_Y() {
-		return STARTING_Y;
-	}
-	
 	public String[][] getScrambleGrid() {
 		return scrambleGrid;
 	}
@@ -257,8 +230,4 @@ public class DropQuote {
 		return puzzleGrid;
 	}
 	
-	public double getGRID_FONT_SIZE() {
-		return GRID_FONT_SIZE;
-	}
-
 }

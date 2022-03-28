@@ -1,12 +1,11 @@
 /API.class
 /Driver.class
-/DropQuote$Preferences.class
+/DropQuote$DropQuotePreferences.class
 /DropQuote.class
-/Preferences.class
 /PuzzleSeries.class
 /ScrambleQuote$Preferences.class
 /ScrambleQuote.class
-/SplitQuote$Preferences.class
+/SplitQuote$SplitQuotePreferences.class
 /SplitQuote.class
 /StripperQuote$Preferences.class
 /StripperQuote.class
