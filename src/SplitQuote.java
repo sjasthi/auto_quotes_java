@@ -23,7 +23,7 @@ public class SplitQuote {
 		public final static int STARTING_X = 40;
 		public final static int STARTING_Y = 120;
 		public final static int CHUNK_SIZE = 3;
-		public final static int CELL_WIDTH = 120;
+		public final static int CELL_WIDTH = 500;
 		public final static int CELL_HEIGHT = 100;
 		public final static int COLUMNS = 5;
 		public static double CELL_COUNT;
