@@ -63,8 +63,8 @@ public class PPTGenerator {
 					
 					cell1.setText(char_string);
 
-					if(SplitQuote.Preferences.HAS_BOARDERS)
-						setBorders(cell1, SplitQuote.Preferences.SLIDE_NUMBER_COLOR);
+					if(!char_string.equals(""))
+						setBorders(cell1, SplitQuote.Preferences.GRID_COLOR);
 					HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
 					rt1.setFontFamily(SplitQuote.Preferences.FONT_NAME);
 					rt1.setFontSize(SplitQuote.Preferences.GRID_FONT_SIZE);
@@ -130,8 +130,8 @@ public class PPTGenerator {
 					
 					cell1.setText(char_string);
 
-					if(SplitQuote.Preferences.HAS_BOARDERS)
-						setBorders(cell1, SplitQuote.Preferences.SLIDE_NUMBER_COLOR);
+					if(!char_string.equals(""))
+						setBorders(cell1, SplitQuote.Preferences.GRID_COLOR);
 					HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
 					rt1.setFontFamily(SplitQuote.Preferences.FONT_NAME);
 					rt1.setFontSize(SplitQuote.Preferences.GRID_FONT_SIZE);
@@ -700,7 +700,8 @@ public class PPTGenerator {
 		}
 		
 	}
-	
+
+	
 	
 	
 	

@@ -50,6 +50,7 @@ public class Driver {
 				System.out.println("Not a valid selection.\n");
 			}
 		}
+		
 	}
 	
 	public static void isRunning(String serviceName) throws Exception {
