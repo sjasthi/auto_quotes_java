@@ -24,20 +24,23 @@ import org.apache.poi.sl.usermodel.TextParagraph.TextAlign;
 import org.apache.poi.sl.usermodel.VerticalAlignment;
 import org.apache.poi.util.IOUtils;
 
+import SplitQuote.SplitQuotePreferences;
+
 
 public class PuzzleSeries {
 	
+	
+	private final int numberOfPuzzles = 5;
 	private static String PUZZLE_TITLE;
-	private final int numberOfPuzzles = Preferences.PUZZLE_COUNT;
-	private static String PPT_FILE_NAME = Preferences.PPT_FILE_NAME;
-	private static boolean hasBoarders = Preferences.HAS_BOARDERS;
-	private static String FONT_NAME = Preferences.FONT_NAME;
-	private static double TITLE_FONT_SIZE = Preferences.TITLE_FONT_SIZE;
-	private static Color fillColor = Preferences.FILL_COLOR;
-	private static Color textColor = Preferences.TEXT_COLOR;
-	private static Color titleColor = Preferences.TITLE_COLOR;
-	private static Color gridColor = Preferences.GRID_COLOR;
-	private static Color slideNumberColor = Preferences.SLIDE_NUMBER_COLOR;
+	private static String PPT_FILE_NAME;
+	private static boolean hasBoarders;
+	private static String FONT_NAME;
+	private static double TITLE_FONT_SIZE;
+	private static Color fillColor;
+	private static Color textColor;
+	private static Color titleColor;
+	private static Color gridColor;
+	private static Color slideNumberColor;
 	private File quotes = new File("Test.txt");
 	
 	public PuzzleSeries(String puzzleType) throws SQLException, IOException {
@@ -47,6 +50,7 @@ public class PuzzleSeries {
 	
 	public void splitQuotePPT() throws SQLException, IOException {
 		Scanner scan = new Scanner(quotes);
+		PPT_FILE_NAME = SplitQuotePreferences.PPT_FILE_NAME;
 		File ppt_file_name = new File(PPT_FILE_NAME);
 
 		int puzzle_slide_no = 1;

@@ -1,96 +1,162 @@
+import java.awt.Color;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
 public class SplitQuote {
+	class Preferences {
+		public final static String FONT_NAME = "NATS";
+		public final static String TITLE = "Split Quote";
+		public final static double GRID_FONT_SIZE = 20.0;
+		public final static double TITLE_FONT_SIZE = 24.0;
+		public final static Color FILL_COLOR = Color.RED; 
+		public final static Color TEXT_COLOR = Color.RED;
+		public final static Color TITLE_COLOR = Color.RED;
+		public final static Color GRID_COLOR = Color.RED;
+		public final static Color SLIDE_NUMBER_COLOR = Color.RED;
+		public final static boolean HAS_BOARDERS = true;
+		public final static boolean HAS_SPACES = true;
+		public final static boolean HAS_PUNCTUATION = true;
+		public final static int STARTING_X = 40;
+		public final static int STARTING_Y = 120;
+		public final static int CHUNK_SIZE = 3;
+		public final static int CELL_WIDTH = 120;
+		public final static int CELL_HEIGHT = 100;
+		public final static int COLUMNS = 5;
+		public static double CELL_COUNT;
+		public static int ROWS;
+		public static int LENGTH;
+	}
 	
 	private API api = new API();
-	private double cellCount;
-	private int length;
-	private int rows;
-	private int columns;
-	private int cell_width;
-	private int cell_height;
 	private ArrayList<String> logicalChars;
-	private ArrayList<String> quoteParts = new ArrayList<String>();
+	private ArrayList<String> chunks = new ArrayList<String>();
 	private String[][] solutionGrid;
 	private String[][] puzzleGrid;
-	private static int STARTING_X = 40;
-	private static int STARTING_Y = 120;
-	private static double GRID_FONT_SIZE = Preferences.GRID_FONT_SIZE;
-	private boolean hasSpaces = Preferences.hasSpaces;
-	private boolean hasPunctuation = Preferences.hasPunctuation;
+	
 	
 	public SplitQuote(String quote) throws SQLException, IOException {
 		checkParams(quote);
-		splitQuote(logicalChars);
+		createChunks();
+
 		buildSolutionGrid();
 		buildPuzzleGrid();
 	}
 	
+	
+	
+	private void createChunks() {
+		ArrayList<String> tempArray = logicalChars;
+		String currentChunk;
+		Preferences.CELL_COUNT = Math.round(Preferences.LENGTH/Preferences.CHUNK_SIZE);
+		int remainderSize = Preferences.LENGTH%Preferences.CHUNK_SIZE;
+		
+		if(remainderSize==0) {
+			for(int i = 0; i<Preferences.CELL_COUNT; i++) {
+				currentChunk = "";
+				for(int n = 0; n<Preferences.CHUNK_SIZE; n++) {
+					currentChunk += tempArray.remove(0);
+				}
+				chunks.add(currentChunk);
+			}
+		} else {
+			for(int i = 0; i<Preferences.CELL_COUNT; i++) {
+				currentChunk = "";
+				for(int n = 0; n<Preferences.CHUNK_SIZE; n++) {
+					currentChunk += tempArray.remove(0);
+				}
+				chunks.add(currentChunk);
+			}
+			currentChunk = "";
+			for(int i = 0; i<remainderSize; i++) {
+				currentChunk += tempArray.remove(0);
+			}
+			chunks.add(currentChunk);
+		}
+		
+	}
+
+
+	public void buildSolutionGrid() {
+		int rows = (int) Math.round(Preferences.CELL_COUNT/Preferences.COLUMNS);
+		double remainder = Preferences.CELL_COUNT%Preferences.COLUMNS;
+		if(remainder!=0) 
+			rows++;
+			
+		Preferences.ROWS = rows;
+		
+		solutionGrid = new String[(int) Preferences.ROWS][Preferences.COLUMNS];
+		puzzleGrid = new String[(int) Preferences.ROWS][Preferences.COLUMNS];
+		
+		int index = 0;
+		for(int i = 0; i<Preferences.ROWS; i++) {
+			for(int n = 0; n<Preferences.COLUMNS; n++) {
+				if(index<chunks.size()) {
+					solutionGrid[i][n] = chunks.get(index);
+					index++;
+				} else {
+					solutionGrid[i][n] = "";
+				}
+			}
+		}
+		
+		/*
+		for(int i = 0; i<Preferences.ROWS; i++) {
+			for(int n = 0; n<Preferences.COLUMNS; n++) {
+				System.out.print(solutionGrid[i][n]);
+				
+			}
+			System.out.print("\n");
+		}
+		*/
+		
+	}
+	
+	public void buildPuzzleGrid() {
+		Collections.shuffle(chunks);
+		int index = 0;
+		for(int i = 0; i<Preferences.ROWS; i++) {
+			for(int n = 0; n<Preferences.COLUMNS; n++) {
+				if(index<chunks.size()) {
+					puzzleGrid[i][n] = chunks.get(index);
+					index++;
+				} else {
+					puzzleGrid[i][n] = "";
+				}
+			}
+		}
+	}
+
 	public void checkParams(String quote) throws UnsupportedEncodingException, SQLException {
-		if(hasSpaces) {
-			if(hasPunctuation) {
-				length = api.getLength(quote);
+		if(Preferences.HAS_SPACES) {
+			if(Preferences.HAS_PUNCTUATION) {
 				logicalChars = api.getLogicalChars(quote);
 			} else {
-				length = api.getLength(removePunctuation(quote));
 				logicalChars = api.getLogicalChars(removePunctuation(quote));
 			}
 		} else {
-			if(hasPunctuation) {
-				length = api.getLength(removeSpaces(quote));
+			if(Preferences.HAS_PUNCTUATION) {
 				logicalChars = api.getLogicalChars(removeSpaces(quote));
 			} else {
-				length = api.getLength(removeSpaces(removePunctuation(quote)));
 				logicalChars = api.getLogicalChars(removeSpaces(removePunctuation(quote)));
 			}
 		}
+		
+		while(logicalChars.get(0).equals(" ")) {
+			logicalChars.remove(0);
+		}
+		
+		while(logicalChars.get(logicalChars.size()-1).equals(" ")) {
+			logicalChars.remove(logicalChars.size()-1);
+		}
+		
+		Preferences.LENGTH = logicalChars.size();
 	}
 	
-	public double getCellCount() {
-		cellCount = 0.0;
-		if(length>45) {
-			cellCount = 20.0;
-			rows = 4;
-			columns = 5;
-			cell_width = 125;
-			cell_height = 90;
-		} else if(length>36) {
-			cellCount = 15.0;
-			rows = 3;
-			columns = 5;
-			cell_width = 125;
-			cell_height = 100;
-		} else if(length>27) {
-			cellCount = 12.0;
-			rows = 3;
-			columns = 4;
-			cell_width = 160;
-			cell_height = 100;
-		} else if(length>12) {
-			cellCount = 9.0;
-			rows = 3;
-			columns = 3;
-			cell_width = 180;
-			cell_height = 120;
-		} else if(length>6) {
-			cellCount = 4.0;
-			rows = 2;
-			columns = 2;
-			cell_width = 280;
-			cell_height = 180;
-		} else {
-			cellCount = 2.0;
-			rows = 1;
-			columns = 2;
-			cell_width = 280;
-			cell_height = 180;
-		}
-		return cellCount;
-	}
+	
 	
 	private String removeSpaces(String quote) {
 		String newString = "";
@@ -129,49 +195,9 @@ public class SplitQuote {
 		return newString;
 	}
 	
-	public void splitQuote(ArrayList<String> list) {		
-		double chunks = Math.ceil(length/getCellCount());
-		int countLeft = length;
-		double index = getCellCount();
-		while(countLeft>index) {
-			String aChunk = "";
-			for(int i = 0; i<chunks; i++) {
-				aChunk = aChunk + list.remove(0);
-				countLeft--;
-			}
-			quoteParts.add(aChunk);
-			index--;
-			chunks = Math.ceil(countLeft/index);
-		}
-		
-		for(int i = 0; i<index; i++) {
-			quoteParts.add(list.remove(0));
-		}	
-	}
 	
-	public void buildSolutionGrid() {
-		getCellCount();
-		solutionGrid = new String[rows][columns];
-		int count = 0;
-		for(int i = 0; i<rows; i++) {
-			for(int n = 0; n<columns; n++) {
-				solutionGrid[i][n] = quoteParts.get(count);
-				count++;
-			}
-		}
-	}
 	
-	public void buildPuzzleGrid() {
-		puzzleGrid = new String[rows][columns];
-		Collections.shuffle(quoteParts);
-		int count = 0;
-		for(int i = 0; i<rows; i++) {
-			for(int n = 0; n<columns; n++) {
-				puzzleGrid[i][n] = quoteParts.get(count);
-				count++;
-			}
-		}
-	}
+	
 	
 	public String[][] getSolutionGrid() {
 		return solutionGrid;
@@ -179,34 +205,5 @@ public class SplitQuote {
 	
 	public String[][] getPuzzleGrid() {
 		return puzzleGrid;
-	}
-
-	public int getRows() {
-		return rows;
-	}
-	
-	public int getColumns() {
-		return columns;
-	}
-	
-	public int getCellWidth() {
-		return cell_width;
-	}
-
-	public int getCellHeight() {
-		return cell_height;
-	}
-
-	public int getSTARTING_X() {
-		return STARTING_X;
-	}
-
-
-	public int getSTARTING_Y() {
-		return STARTING_Y;
-	}
-
-	public double getGRID_FONT_SIZE() {
-		return GRID_FONT_SIZE;
 	}
 }
