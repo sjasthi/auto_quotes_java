@@ -40,25 +40,24 @@ public class PPTGenerator {
 
 	private File quotes = new File("Test.txt");
 	private static String PPT_FILE_NAME;
-	private static int NUMBER_OF_PUZZLES = 5;
-
+	
 	public PPTGenerator() throws SQLException, IOException {
 		System.out.println("Loading...");
-		//DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");  
-		//LocalDateTime now = LocalDateTime.now();
-		String timeStamp = String.valueOf(System.currentTimeMillis());
-		PPT_FILE_NAME = "Puzzles_" + timeStamp + ".ppt";
+		
 	}
 
 	public void createSplitQuote() throws SQLException, IOException {
 
+		String timeStamp = String.valueOf(System.currentTimeMillis());
+		PPT_FILE_NAME = "Puzzles_" + timeStamp + ".ppt";
+		
 		Scanner scan = new Scanner(quotes);
 		File ppt_file_name = new File(PPT_FILE_NAME);
 
 		int puzzle_slide_no = 1;
 		HSLFSlideShow ppt = new HSLFSlideShow();
 
-		for(int n = 0; n<NUMBER_OF_PUZZLES ; n++) {
+		for(int n = 0; n<SplitQuotePreferences.PUZZLE_COUNT; n++) {
 
 			String quote = scan.nextLine();
 			SplitQuote puzzle = new SplitQuote(quote);
@@ -109,10 +108,9 @@ public class PPTGenerator {
 		ppt.write(out);
 		out.close();
 
-		System.out.println("Puzzle is created: " + ppt_file_name);
+		System.out.println("Puzzle created: " + ppt_file_name);
 		Desktop.getDesktop().browse(ppt_file_name.toURI());
-		System.out.println("Done.");
-
+		
 		ppt.close();
 		scan.close();
 
@@ -124,7 +122,7 @@ public class PPTGenerator {
 
 		int puzzle_slide_no = 1;
 
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<SplitQuotePreferences.PUZZLE_COUNT; n++) {
 
 			String quote = scan.nextLine();
 			SplitQuote puzzle = new SplitQuote(quote);
@@ -173,6 +171,9 @@ public class PPTGenerator {
 
 	public void createDropQuote() throws SQLException, IOException {
 
+		String timeStamp = String.valueOf(System.currentTimeMillis());
+		PPT_FILE_NAME = "Puzzles_" + timeStamp + ".ppt";
+		
 		Scanner scan = new Scanner(quotes);
 		File ppt_file_name = new File(PPT_FILE_NAME);
 
@@ -180,7 +181,7 @@ public class PPTGenerator {
 		HSLFSlideShow ppt = new HSLFSlideShow();
 
 		//Repeat all this for each puzzle
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<DropQuotePreferences.PUZZLE_COUNT; n++) {
 
 			String quote = scan.nextLine();
 			DropQuote puzzle = new DropQuote(quote);
@@ -278,10 +279,9 @@ public class PPTGenerator {
 		ppt.write(out);
 		out.close();
 
-		System.out.println("Puzzle is created: " + ppt_file_name);
+		System.out.println("Puzzle created: " + ppt_file_name);
 		Desktop.getDesktop().browse(ppt_file_name.toURI());
-		System.out.println("Done.");
-
+		
 		ppt.close();
 		scan.close();
 
@@ -292,7 +292,7 @@ public class PPTGenerator {
 		Scanner scan = new Scanner(quotes);
 		int puzzle_slide_no = 1;
 
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<DropQuotePreferences.PUZZLE_COUNT; n++) {
 			String quote = scan.nextLine();
 			DropQuote puzzle = new DropQuote(quote);			
 			HSLFSlide slide = ppt.createSlide();
@@ -355,6 +355,9 @@ public class PPTGenerator {
 
 	public void createFloatQuote() throws SQLException, IOException {
 
+		String timeStamp = String.valueOf(System.currentTimeMillis());
+		PPT_FILE_NAME = "Puzzles_" + timeStamp + ".ppt";
+		
 		Scanner scan = new Scanner(quotes);
 		File ppt_file_name = new File(PPT_FILE_NAME);
 
@@ -362,7 +365,7 @@ public class PPTGenerator {
 		HSLFSlideShow ppt = new HSLFSlideShow();
 
 		//Repeat all this for each puzzle
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<FloatQuotePreferences.PUZZLE_COUNT; n++) {
 
 			String quote = scan.nextLine();
 			FloatQuote puzzle = new FloatQuote(quote);
@@ -461,10 +464,9 @@ public class PPTGenerator {
 		ppt.write(out);
 		out.close();
 
-		System.out.println("Puzzle is created: " + ppt_file_name);
+		System.out.println("Puzzle created: " + ppt_file_name);
 		Desktop.getDesktop().browse(ppt_file_name.toURI());
-		System.out.println("Done.");
-
+		
 		ppt.close();
 		scan.close();
 
@@ -475,7 +477,7 @@ public class PPTGenerator {
 		Scanner scan = new Scanner(quotes);
 		int puzzle_slide_no = 1;
 
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<FloatQuotePreferences.PUZZLE_COUNT; n++) {
 			String quote = scan.nextLine();
 			FloatQuote puzzle = new FloatQuote(quote);			
 			HSLFSlide slide = ppt.createSlide();
@@ -539,6 +541,9 @@ public class PPTGenerator {
 
 	public void createStripperQuote() throws IOException, SQLException {
 
+		String timeStamp = String.valueOf(System.currentTimeMillis());
+		PPT_FILE_NAME = "Puzzles_" + timeStamp + ".ppt";
+		
 		String char_string;
 		Scanner scan = new Scanner(quotes);
 		File ppt_file_name = new File(PPT_FILE_NAME);
@@ -547,7 +552,7 @@ public class PPTGenerator {
 		int yOffSet;
 		HSLFSlideShow ppt = new HSLFSlideShow();
 
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<StripperQuotePreferences.PUZZLE_COUNT; n++) {
 
 			String quote = scan.nextLine();
 			StripperQuote puzzle = new StripperQuote(quote);
@@ -645,10 +650,9 @@ public class PPTGenerator {
 		ppt.write(out);
 		out.close();
 
-		System.out.println("Puzzle is created: " + ppt_file_name);
+		System.out.println("Puzzle created: " + ppt_file_name);
 		Desktop.getDesktop().browse(ppt_file_name.toURI());
-		System.out.println("Done.");
-
+		
 		ppt.close();
 		scan.close();
 	}
@@ -659,7 +663,7 @@ public class PPTGenerator {
 		int puzzle_slide_no = 1;
 		String char_string;
 
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<StripperQuotePreferences.PUZZLE_COUNT; n++) {
 			String quote = scan.nextLine();
 			StripperQuote puzzle = new StripperQuote(quote);
 
@@ -721,6 +725,9 @@ public class PPTGenerator {
 
 	public void createScrambleQuote() throws SQLException, IOException {
 
+		String timeStamp = String.valueOf(System.currentTimeMillis());
+		PPT_FILE_NAME = "Puzzles_" + timeStamp + ".ppt";
+		
 		String char_string;
 		Scanner scan = new Scanner(quotes);
 		File ppt_file_name = new File(PPT_FILE_NAME);
@@ -728,7 +735,7 @@ public class PPTGenerator {
 		int puzzle_slide_no = 1;
 		HSLFSlideShow ppt = new HSLFSlideShow();
 
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<ScrambleQuotePreferences.PUZZLE_COUNT; n++) {
 
 			String quote = scan.nextLine();
 			ScrambleQuote puzzle = new ScrambleQuote(quote);
@@ -823,10 +830,9 @@ public class PPTGenerator {
 		ppt.write(out);
 		out.close();
 
-		System.out.println("Puzzle is created: " + ppt_file_name);
+		System.out.println("Puzzle created: " + ppt_file_name);
 		Desktop.getDesktop().browse(ppt_file_name.toURI());
-		System.out.println("Done.");
-
+		
 		ppt.close();
 		scan.close();
 
@@ -838,7 +844,7 @@ public class PPTGenerator {
 		int puzzle_slide_no = 1;
 		String char_string;
 
-		for(int n = 0; n<NUMBER_OF_PUZZLES; n++) {
+		for(int n = 0; n<ScrambleQuotePreferences.PUZZLE_COUNT; n++) {
 			String quote = scan.nextLine();
 			ScrambleQuote puzzle = new ScrambleQuote(quote);
 
@@ -897,10 +903,6 @@ public class PPTGenerator {
 		}
 
 	}
-
-
-
-
 
 	private boolean hasPunctuation(String a) {
 		ArrayList<String> punctuation = new ArrayList<String>();
