@@ -15,7 +15,7 @@ public class Driver {
 		boolean loopExit = true;
 		
 		while(loopExit) {
-			System.out.println("1: Stripper Quote\n2: Scramble Quote\n3: Split Quote\n4: Drop Quote\n5: Float Quote\n6: Exit");
+			System.out.println("1: Stripper Quote\n2: Scramble Quote\n3: Split Quote\n4: Drop Quote\n5: Float Quote\n6: Generate All\n7: Exit");
 			System.out.println("Enter Selection: ");
 			input = scan.nextLine();
 			
@@ -34,8 +34,15 @@ public class Driver {
 				s1.createDropQuote();
 			} else if(input.equals("5")) {
 				PPTGenerator s1 = new PPTGenerator();
-				s1.createFloatQuote();;
+				s1.createFloatQuote();
 			} else if(input.equals("6")) {
+				PPTGenerator s1 = new PPTGenerator();
+				s1.createStripperQuote();
+				s1.createScrambleQuote();
+				s1.createSplitQuote();
+				s1.createDropQuote();
+				s1.createFloatQuote();
+			} else if(input.equals("7")) {
 				loopExit = false;
 				System.out.println("Goodbye"); 
 			} else {
