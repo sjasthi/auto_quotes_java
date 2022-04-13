@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -23,11 +24,14 @@ import org.apache.poi.sl.usermodel.TableCell.BorderEdge;
 import org.apache.poi.sl.usermodel.TextParagraph.TextAlign;
 import org.apache.poi.sl.usermodel.VerticalAlignment;
 import org.apache.poi.util.IOUtils;
+
+import games.DropNFloatQuote;
 import games.DropQuote;
 import games.FloatQuote;
 import games.ScrambleQuote;
 import games.SplitQuote;
 import games.StripperQuote;
+import preferences.DropNFloatQuotePreferences;
 import preferences.DropQuotePreferences;
 import preferences.FloatQuotePreferences;
 import preferences.ScrambleQuotePreferences;
@@ -40,10 +44,10 @@ public class PPTGenerator {
 
 	private File quotes = new File("Test.txt");
 	private static String PPT_FILE_NAME;
+	private API api = new API();
 	
 	public PPTGenerator() throws SQLException, IOException {
-		System.out.println("Loading...");
-		
+		System.out.println("Loading...");	
 	}
 
 	public void createSplitQuote() throws SQLException, IOException {
@@ -59,7 +63,7 @@ public class PPTGenerator {
 
 		for(int n = 0; n<SplitQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, SplitQuotePreferences.LENGTH_LIMIT);
 			SplitQuote puzzle = new SplitQuote(quote);
 			String[][] grid = puzzle.getPuzzleGrid();
 
@@ -116,7 +120,7 @@ public class PPTGenerator {
 
 	}
 
-	@SuppressWarnings("resource")
+
 	private void splitQuoteSolutions(HSLFSlideShow ppt) throws SQLException, IOException {
 		Scanner scan = new Scanner(quotes);
 
@@ -124,7 +128,7 @@ public class PPTGenerator {
 
 		for(int n = 0; n<SplitQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, SplitQuotePreferences.LENGTH_LIMIT);
 			SplitQuote puzzle = new SplitQuote(quote);
 			String[][] grid = puzzle.getSolutionGrid();
 
@@ -183,7 +187,7 @@ public class PPTGenerator {
 		//Repeat all this for each puzzle
 		for(int n = 0; n<DropQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, DropQuotePreferences.LENGTH_LIMIT);
 			DropQuote puzzle = new DropQuote(quote);
 			String[][] grid = puzzle.getScrambleGrid();
 
@@ -287,13 +291,12 @@ public class PPTGenerator {
 
 	}
 
-	@SuppressWarnings("resource")
 	private void dropSolutions(HSLFSlideShow ppt) throws SQLException, IOException {
 		Scanner scan = new Scanner(quotes);
 		int puzzle_slide_no = 1;
 
 		for(int n = 0; n<DropQuotePreferences.PUZZLE_COUNT; n++) {
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, DropQuotePreferences.LENGTH_LIMIT);
 			DropQuote puzzle = new DropQuote(quote);			
 			HSLFSlide slide = ppt.createSlide();
 			String title_name = "Drop Quote Solution";
@@ -367,7 +370,7 @@ public class PPTGenerator {
 		//Repeat all this for each puzzle
 		for(int n = 0; n<FloatQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, FloatQuotePreferences.LENGTH_LIMIT);
 			FloatQuote puzzle = new FloatQuote(quote);
 			String[][] grid = puzzle.getPuzzleGrid();
 
@@ -472,13 +475,12 @@ public class PPTGenerator {
 
 	}
 
-	@SuppressWarnings("resource")
 	private void floatSolutions(HSLFSlideShow ppt) throws SQLException, IOException {
 		Scanner scan = new Scanner(quotes);
 		int puzzle_slide_no = 1;
 
 		for(int n = 0; n<FloatQuotePreferences.PUZZLE_COUNT; n++) {
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, FloatQuotePreferences.LENGTH_LIMIT);
 			FloatQuote puzzle = new FloatQuote(quote);			
 			HSLFSlide slide = ppt.createSlide();
 			String title_name = "Float Quote Solution";
@@ -554,7 +556,7 @@ public class PPTGenerator {
 
 		for(int n = 0; n<StripperQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, StripperQuotePreferences.LENGTH_LIMIT);
 			StripperQuote puzzle = new StripperQuote(quote);
 			yOffSet = 0;
 
@@ -657,14 +659,13 @@ public class PPTGenerator {
 		scan.close();
 	}
 
-	@SuppressWarnings("resource")
 	private void stripperQuoteSolutions(HSLFSlideShow ppt) throws SQLException, IOException {
 		Scanner scan = new Scanner(quotes);
 		int puzzle_slide_no = 1;
 		String char_string;
 
 		for(int n = 0; n<StripperQuotePreferences.PUZZLE_COUNT; n++) {
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, StripperQuotePreferences.LENGTH_LIMIT);
 			StripperQuote puzzle = new StripperQuote(quote);
 
 			int yOffSet = 30;
@@ -737,7 +738,7 @@ public class PPTGenerator {
 
 		for(int n = 0; n<ScrambleQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, ScrambleQuotePreferences.LENGTH_LIMIT);
 			ScrambleQuote puzzle = new ScrambleQuote(quote);
 			int yOffSet = 0;
 
@@ -838,14 +839,13 @@ public class PPTGenerator {
 
 	}
 
-	@SuppressWarnings("resource")
 	private void scrambleQuoteSolutions(HSLFSlideShow ppt) throws SQLException, IOException {
 		Scanner scan = new Scanner(quotes);
 		int puzzle_slide_no = 1;
 		String char_string;
 
 		for(int n = 0; n<ScrambleQuotePreferences.PUZZLE_COUNT; n++) {
-			String quote = scan.nextLine();
+			String quote = lengthCheck(scan, ScrambleQuotePreferences.LENGTH_LIMIT);
 			ScrambleQuote puzzle = new ScrambleQuote(quote);
 
 			int yOffSet = 30;
@@ -903,6 +903,296 @@ public class PPTGenerator {
 		}
 
 	}
+	
+	public void createDropNFloat() throws SQLException, IOException {
+		Scanner scan = new Scanner(quotes);
+		String char_string;
+		String timeStamp = String.valueOf(System.currentTimeMillis());
+		PPT_FILE_NAME = "Puzzles_" + timeStamp + ".ppt";
+		File ppt_file_name = new File(PPT_FILE_NAME);
+		int puzzle_slide_no = 1;
+		HSLFSlideShow ppt = new HSLFSlideShow();
+		
+		for(int n = 0; n<DropNFloatQuotePreferences.PUZZLE_COUNT; n++) {		
+			
+			String quote1 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_LIMIT);
+			String quote2 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_LIMIT);
+			DropNFloatQuote puzzle = new DropNFloatQuote(quote1, quote2);
+			
+			int yOffSet = 0;
+
+			HSLFSlide slide = ppt.createSlide();
+			createTitle(slide, DropNFloatQuotePreferences.TITLE, DropNFloatQuotePreferences.FONT_NAME, DropNFloatQuotePreferences.TITLE_FONT_SIZE, DropNFloatQuotePreferences.TITLE_COLOR);
+			createLogo(ppt, slide);
+
+			//creating the float grid
+			HSLFTable table = slide.createTable(DropNFloatQuotePreferences.FLOAT_ROWS, DropNFloatQuotePreferences.COLUMNS);
+			String[][] grid = puzzle.getFloatGrid();
+			for (int i = 0; i < DropNFloatQuotePreferences.FLOAT_ROWS; i++) {
+				for (int j = 0; j < DropNFloatQuotePreferences.COLUMNS; j++) {
+					char_string = String.valueOf(grid[i][j]);
+					if(char_string.equals(" ")) {
+						HSLFTableCell cell1 = table.getCell(i, j);
+
+						cell1.setText(" ");
+						cell1.setFillColor(DropNFloatQuotePreferences.FILL_COLOR);
+
+						if(DropNFloatQuotePreferences.HAS_BOARDERS)
+							setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+						rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+						rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					} else {
+						HSLFTableCell cell1 = table.getCell(i, j);
+
+						cell1.setText(" ");
+
+						if(DropNFloatQuotePreferences.HAS_BOARDERS)
+							setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+						rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+						rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					}
+				}
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.COLUMNS; b++) {
+				table.setColumnWidth(b, DropNFloatQuotePreferences.FLOAT_CELL_WIDTH);
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.FLOAT_ROWS; b++) {
+				table.setRowHeight(b, DropNFloatQuotePreferences.FLOAT_CELL_HEIGHT);
+			}
+
+			table.moveTo(DropNFloatQuotePreferences.STARTING_X, DropNFloatQuotePreferences.STARTING_Y + yOffSet);
+
+			//offset for next table
+			yOffSet += (23*DropNFloatQuotePreferences.FLOAT_ROWS);
+			
+			//creating the clue grid
+			table = slide.createTable(DropNFloatQuotePreferences.DROP_ROWS+DropNFloatQuotePreferences.FLOAT_ROWS, DropNFloatQuotePreferences.COLUMNS);
+			grid = puzzle.getFinalScrambleGrid();
+			for (int i = 0; i < DropNFloatQuotePreferences.DROP_ROWS+DropNFloatQuotePreferences.FLOAT_ROWS; i++) {
+				for (int j = 0; j < DropNFloatQuotePreferences.COLUMNS; j++) {
+					char_string = String.valueOf(grid[i][j]);
+					
+					HSLFTableCell cell1 = table.getCell(i, j);
+					cell1.setText(char_string);
+					
+					if(DropNFloatQuotePreferences.HAS_BOARDERS)
+						setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+					HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+					rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+					rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+					rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+					cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+					cell1.setHorizontalCentered(true);
+				}
+			}
+			
+			for (int b = 0; b < DropNFloatQuotePreferences.COLUMNS; b++) {
+				table.setColumnWidth(b, DropNFloatQuotePreferences.FLOAT_CELL_WIDTH);
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.DROP_ROWS+DropNFloatQuotePreferences.FLOAT_ROWS; b++) {
+				table.setRowHeight(b, DropNFloatQuotePreferences.FLOAT_CELL_HEIGHT);
+			}
+
+			table.moveTo(DropNFloatQuotePreferences.STARTING_X, DropNFloatQuotePreferences.STARTING_Y + yOffSet);
+			
+			//offset for next table
+			yOffSet += (23*(DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS));
+			
+			//creating the drop grid
+			table = slide.createTable(DropNFloatQuotePreferences.DROP_ROWS, DropNFloatQuotePreferences.COLUMNS);
+			grid = puzzle.getDropGrid();
+			for (int i = 0; i < DropNFloatQuotePreferences.DROP_ROWS; i++) {
+				for (int j = 0; j < DropNFloatQuotePreferences.COLUMNS; j++) {
+					char_string = String.valueOf(grid[i][j]);
+					if(char_string.equals(" ")) {
+						HSLFTableCell cell1 = table.getCell(i, j);
+
+						cell1.setText(" ");
+						cell1.setFillColor(DropNFloatQuotePreferences.FILL_COLOR);
+
+						if(DropNFloatQuotePreferences.HAS_BOARDERS)
+							setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+						rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+						rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					} else {
+						HSLFTableCell cell1 = table.getCell(i, j);
+
+						cell1.setText(" ");
+
+						if(DropNFloatQuotePreferences.HAS_BOARDERS)
+							setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+						rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+						rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					}
+				}
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.COLUMNS; b++) {
+				table.setColumnWidth(b, DropNFloatQuotePreferences.DROP_CELL_WIDTH);
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.DROP_ROWS; b++) {
+				table.setRowHeight(b, DropNFloatQuotePreferences.DROP_CELL_HEIGHT);
+			}
+
+			table.moveTo(DropNFloatQuotePreferences.STARTING_X, DropNFloatQuotePreferences.STARTING_Y + yOffSet);
+
+			createSlideNumber(slide, puzzle_slide_no, DropNFloatQuotePreferences.FONT_NAME, DropNFloatQuotePreferences.SLIDE_NUMBER_COLOR);
+			puzzle_slide_no++;
+		}
+		
+		dropNFloatSolutions(ppt);
+		
+		FileOutputStream out = new FileOutputStream(ppt_file_name);
+		ppt.write(out);
+		out.close();
+
+		System.out.println("Puzzle created: " + ppt_file_name);
+		Desktop.getDesktop().browse(ppt_file_name.toURI());
+		
+		ppt.close();
+		scan.close();
+	}
+	
+	private void dropNFloatSolutions(HSLFSlideShow ppt) throws SQLException, IOException {
+		Scanner scan = new Scanner(quotes);
+		String char_string;
+		
+		int puzzle_slide_no = 1;
+		
+		for(int n = 0; n<DropNFloatQuotePreferences.PUZZLE_COUNT; n++) {
+			
+			
+			String quote1 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_LIMIT);
+			String quote2 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_LIMIT);
+			DropNFloatQuote puzzle = new DropNFloatQuote(quote1, quote2);
+			
+			int yOffSet = 0;
+
+			HSLFSlide slide = ppt.createSlide();
+			createTitle(slide, "Drop N Float Solution", DropNFloatQuotePreferences.FONT_NAME, DropNFloatQuotePreferences.TITLE_FONT_SIZE, DropNFloatQuotePreferences.TITLE_COLOR);
+			createLogo(ppt, slide);
+
+			//creating the float grid
+			HSLFTable table = slide.createTable(DropNFloatQuotePreferences.FLOAT_ROWS, DropNFloatQuotePreferences.COLUMNS);
+			String[][] grid = puzzle.getFloatGrid();
+			for (int i = 0; i < DropNFloatQuotePreferences.FLOAT_ROWS; i++) {
+				for (int j = 0; j < DropNFloatQuotePreferences.COLUMNS; j++) {
+					char_string = String.valueOf(grid[i][j]);
+					if(char_string.equals(" ")) {
+						HSLFTableCell cell1 = table.getCell(i, j);
+
+						cell1.setText(" ");
+						cell1.setFillColor(DropNFloatQuotePreferences.FILL_COLOR);
+
+						if(DropNFloatQuotePreferences.HAS_BOARDERS)
+							setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+						rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+						rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					} else {
+						HSLFTableCell cell1 = table.getCell(i, j);
+
+						cell1.setText(char_string);
+
+						if(DropNFloatQuotePreferences.HAS_BOARDERS)
+							setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+						rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+						rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					}
+				}
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.COLUMNS; b++) {
+				table.setColumnWidth(b, DropNFloatQuotePreferences.FLOAT_CELL_WIDTH);
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.FLOAT_ROWS; b++) {
+				table.setRowHeight(b, DropNFloatQuotePreferences.FLOAT_CELL_HEIGHT);
+			}
+
+			table.moveTo(DropNFloatQuotePreferences.STARTING_X, DropNFloatQuotePreferences.STARTING_Y + yOffSet);
+			
+			//offset for next table
+			yOffSet += (35*DropNFloatQuotePreferences.FLOAT_ROWS);
+			
+			//creating the drop grid
+			table = slide.createTable(DropNFloatQuotePreferences.DROP_ROWS, DropNFloatQuotePreferences.COLUMNS);
+			grid = puzzle.getDropGrid();
+			for (int i = 0; i < DropNFloatQuotePreferences.DROP_ROWS; i++) {
+				for (int j = 0; j < DropNFloatQuotePreferences.COLUMNS; j++) {
+					char_string = String.valueOf(grid[i][j]);
+					if(char_string.equals(" ")) {
+						HSLFTableCell cell1 = table.getCell(i, j);
+
+						cell1.setText(" ");
+						cell1.setFillColor(DropNFloatQuotePreferences.FILL_COLOR);
+
+						if(DropNFloatQuotePreferences.HAS_BOARDERS)
+							setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+						rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+						rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					} else {
+						HSLFTableCell cell1 = table.getCell(i, j);
+
+						cell1.setText(char_string);
+
+						if(DropNFloatQuotePreferences.HAS_BOARDERS)
+							setBorders(cell1, DropNFloatQuotePreferences.GRID_COLOR);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily(DropNFloatQuotePreferences.FONT_NAME);
+						rt1.setFontSize(DropNFloatQuotePreferences.GRID_FONT_SIZE);
+						rt1.setFontColor(DropNFloatQuotePreferences.TEXT_COLOR);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
+					}
+				}
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.COLUMNS; b++) {
+				table.setColumnWidth(b, DropNFloatQuotePreferences.DROP_CELL_WIDTH);
+			}
+
+			for (int b = 0; b < DropNFloatQuotePreferences.DROP_ROWS; b++) {
+				table.setRowHeight(b, DropNFloatQuotePreferences.DROP_CELL_HEIGHT);
+			}
+
+			table.moveTo(DropNFloatQuotePreferences.STARTING_X, DropNFloatQuotePreferences.STARTING_Y + yOffSet);
+
+			createSlideNumber(slide, puzzle_slide_no, DropNFloatQuotePreferences.FONT_NAME, DropNFloatQuotePreferences.SLIDE_NUMBER_COLOR);
+			puzzle_slide_no++;
+		}
+	}
 
 	private boolean hasPunctuation(String a) {
 		ArrayList<String> punctuation = new ArrayList<String>();
@@ -914,6 +1204,16 @@ public class PPTGenerator {
 			return true;
 		else
 			return false;
+	}
+	
+	private String lengthCheck(Scanner scan, int limit) throws UnsupportedEncodingException {
+		String quote = scan.nextLine();
+		int length = api.getLength(quote);
+		while(length>limit) {
+			quote = scan.nextLine();
+			length = api.getLength(quote);
+		}
+		return quote;
 	}
 
 	public static void createTitle(HSLFSlide slide, String title, String fontName, double fontSize, Color c) {

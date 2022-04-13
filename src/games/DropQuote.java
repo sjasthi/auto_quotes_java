@@ -20,14 +20,13 @@ public class DropQuote {
 	private String[][] puzzleGrid;
 	 
 	
-	private ArrayList<String> wordList = new ArrayList<String>();
+	//private ArrayList<String> wordList = new ArrayList<String>();
 	private ArrayList<String> letterBank = new ArrayList<String>();
 	private ArrayList<String> logicalChars = new ArrayList<String>();
 	
 	public DropQuote(String quote) throws SQLException, IOException {	
 		
 		initializeCellCount(quote);
-		createWordList();
 		createLetterBank();
 		
 		scrambleGrid = new String[DropQuotePreferences.ROWS][DropQuotePreferences.COLUMNS];
@@ -35,20 +34,6 @@ public class DropQuote {
 		
 		buildPuzzleGrid();
 		buildScrambleGrid();
-	}
-	
-	private void createWordList() {
-		for(int i = 0; i<DropQuotePreferences.CELL_COUNT; i++) {
-			if(i<DropQuotePreferences.LENGTH) {
-				wordList.add(logicalChars.get(i));
-			} else {
-				wordList.add(" ");
-			}	
-		}
-	}
-	
-	public ArrayList<String> getWordList() {
-		return wordList;
 	}
 	
 	private void initializeCellCount(String quote) throws UnsupportedEncodingException, SQLException {
@@ -113,8 +98,7 @@ public class DropQuote {
 		
 		for(int i = 0; i<DropQuotePreferences.ROWS; i++) {
 			scrambleGrid[i][column] = columnChars.get(i);
-		}
-		
+		}	
 	}
 	
 	private void removePunctuation(String quote) throws UnsupportedEncodingException, SQLException {
@@ -147,8 +131,12 @@ public class DropQuote {
 		int index = 0;
 		for(int i = 0; i<DropQuotePreferences.ROWS; i++) {
 			for(int j = 0; j<DropQuotePreferences.COLUMNS; j++) {
-				puzzleGrid[i][j] = wordList.get(index);
-				index++;
+				if(index<DropQuotePreferences.LENGTH) {					
+					puzzleGrid[i][j] = logicalChars.get(index);
+					index++;
+				} else {
+					puzzleGrid[i][j] = " ";
+				}
 			}
 		}
 	}
