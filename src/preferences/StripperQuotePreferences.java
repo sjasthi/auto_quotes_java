@@ -18,6 +18,7 @@ public class StripperQuotePreferences {
 	public final static Color GRID_COLOR = Color.BLUE;
 	public final static Color SLIDE_NUMBER_COLOR = Color.BLUE;
 	public final static int PUZZLE_COUNT = 5;
+	public final static int LENGTH_LIMIT = 30;
 	public final static int CELL_WIDTH = 40;
 	public final static int CELL_HEIGHT = 30;
 	public final static int COLUMNS = 16;

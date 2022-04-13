@@ -22,6 +22,7 @@ public class SplitQuotePreferences {
 	public final static int CELL_HEIGHT = 80;
 	public final static int COLUMNS = 5;
 	public static final int PUZZLE_COUNT = 5;
+	public final static int LENGTH_LIMIT = 30;
 	public static double CELL_COUNT;
 	public static int ROWS;
 	public static int LENGTH;
