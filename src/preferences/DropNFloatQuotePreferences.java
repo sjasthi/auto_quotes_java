@@ -17,8 +17,9 @@ public class DropNFloatQuotePreferences {
 	public final static Color TITLE_COLOR = Color.BLUE;
 	public final static Color GRID_COLOR = Color.BLUE;
 	public final static Color SLIDE_NUMBER_COLOR = Color.BLUE;
-	public final static int PUZZLE_COUNT = 5;
-	public final static int LENGTH_LIMIT = 30;
+	public final static int PUZZLE_COUNT = 10;
+	public final static int LENGTH_MAX = 30;
+	public final static int LENGTH_MIN = 5;
 	public final static int STARTING_X = 40;
 	public final static int STARTING_Y = 80;
 	public static int FLOAT_LENGTH;

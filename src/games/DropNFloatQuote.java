@@ -11,33 +11,29 @@ import preferences.DropNFloatQuotePreferences;
 public class DropNFloatQuote {
 	private String[][] floatGrid;
 	private String[][] dropGrid;
-	private String[][] floatScrambleGrid;
-	private String[][] dropScrambleGrid;
-
-	private String[][] finalScrambleGrid;
+	private String[][] scrambleGrid;
 	private API api = new API();
 	
 	ArrayList<String> logicalChars1;
 	ArrayList<String> logicalChars2;
 	
 	public DropNFloatQuote(String quote1, String quote2) throws UnsupportedEncodingException, SQLException {
-		initializeCellCount(quote1, quote2);
+		initializeCellCount(quote1.trim(), quote2.trim());
 		
 		floatGrid = new String[DropNFloatQuotePreferences.FLOAT_ROWS][DropNFloatQuotePreferences.COLUMNS];
 		dropGrid = new String[DropNFloatQuotePreferences.DROP_ROWS][DropNFloatQuotePreferences.COLUMNS];
-		finalScrambleGrid = new String[DropNFloatQuotePreferences.FLOAT_ROWS + DropNFloatQuotePreferences.DROP_ROWS][DropNFloatQuotePreferences.COLUMNS];
-		floatScrambleGrid = new String[DropNFloatQuotePreferences.FLOAT_ROWS][DropNFloatQuotePreferences.COLUMNS];
-		dropScrambleGrid = new String[DropNFloatQuotePreferences.DROP_ROWS][DropNFloatQuotePreferences.COLUMNS];
+		scrambleGrid = new String[DropNFloatQuotePreferences.FLOAT_ROWS + DropNFloatQuotePreferences.DROP_ROWS][DropNFloatQuotePreferences.COLUMNS];
 		
 		buildFloatGrid();
 		buildDropGrid();
-		
-		buildScrambleGrids();
-		buildFinalScrambleGrid();
+		buildScrambleGrid();
+			
 	}
 	
 	private ArrayList<String> removePunctuation(String quote) throws UnsupportedEncodingException, SQLException {
-		ArrayList<String> tempList = api.getLogicalChars(quote);
+		String newQuote = quote.trim();
+		ArrayList<String> tempList = api.getLogicalChars(newQuote);
+		
 		ArrayList<String> punctuation = new ArrayList<String>();
 		punctuation.add("'");
 		punctuation.add(".");
@@ -92,94 +88,94 @@ public class DropNFloatQuote {
 		}
 	}
 	
-	private void buildFinalScrambleGrid() {
+	private void buildScrambleGrid() {
+		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
+		
+		for(int i = 0; i<DropNFloatQuotePreferences.FLOAT_ROWS; i++) {
+			for(int j = 0; j<DropNFloatQuotePreferences.COLUMNS; j++) {
+				scrambleGrid[i][j] = floatGrid[i][j];
+			}
+		}
+		
+		for(int i = DropNFloatQuotePreferences.FLOAT_ROWS; i<totalRowCount; i++) {
+			for(int j = 0; j<DropNFloatQuotePreferences.COLUMNS; j++) {
+				scrambleGrid[i][j] = dropGrid[i-DropNFloatQuotePreferences.FLOAT_ROWS][j];
+			}
+		}
+		
+		randomizeColumns();
+		sortColumns();
+	}
+	
+	private void randomizeColumns() {
+		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
+		ArrayList<String> currentColumn;
+		for(int i = 0; i<DropNFloatQuotePreferences.COLUMNS; i++) {
+			currentColumn = new ArrayList<String>();
+			for(int j = 0; j<totalRowCount; j++) {
+				currentColumn.add(scrambleGrid[j][i]);
+			}
+			Collections.shuffle(currentColumn);
+			for(int j = 0; j<totalRowCount; j++) {
+				scrambleGrid[j][i] = currentColumn.remove(0);
+			}
+		}
+	}
+	
+	private void sortColumns() {
+		int spacesCount;
+		int half;
+		for(int i = 0; i<DropNFloatQuotePreferences.COLUMNS; i++) {
+			spacesCount = getSpacesCount(i);		
+			for(int j = 0; j<spacesCount; j++) {
+				floatColumn(i);
+			}
+			half = Math.round(spacesCount/2);
+			for(int j = 0; j<half; j++) {
+				moveToTop(i);
+			}
+		}
+	}
+	
+	private void moveToTop(int column) {
+		int cell1;
+		int cell2;
 		int index;
-		for(int i = 0; i<DropNFloatQuotePreferences.COLUMNS; i++) {
-			index = 0;
-			for(int j = 0; j<DropNFloatQuotePreferences.FLOAT_ROWS; j++) {
-				finalScrambleGrid[j][i] = floatScrambleGrid[j][i];
-				index++;
-			}
-			for(int j = 0; j<DropNFloatQuotePreferences.DROP_ROWS; j++) {
-				finalScrambleGrid[j+index][i] = dropScrambleGrid[j][i];
-			}
-		}
-	}
-	
-	private void buildScrambleGrids() throws UnsupportedEncodingException, SQLException {
-		for(int i = 0; i<DropNFloatQuotePreferences.COLUMNS; i++) {
-			randomizeFloatColumn(i);
-			floatColumn(i);
-			randomizeDropColumn(i);
-			dropColumn(i);
-		}
-	}
-	
-	private void randomizeFloatColumn(int column) {
-		ArrayList<String> columnChars = new ArrayList<String>();
-
-		for(int i = 0; i<DropNFloatQuotePreferences.FLOAT_ROWS; i++) {
-			String currentChar = floatGrid[i][column];
-			columnChars.add(currentChar);
+		index = 0;
+		while(scrambleGrid[index][column].equals(" ")) {
+			index++;
 		}
 		
-		Collections.shuffle(columnChars);
-		
-		for(int i = 0; i<DropNFloatQuotePreferences.FLOAT_ROWS; i++) {
-			floatScrambleGrid[i][column] = columnChars.get(i);
-		}	
-	}
-	
-	private void randomizeDropColumn(int column) {
-		ArrayList<String> columnChars = new ArrayList<String>();
-		for(int i = 0; i<DropNFloatQuotePreferences.DROP_ROWS; i++) {
-			String currentChar = dropGrid[i][column];
-			columnChars.add(currentChar);
+		cell1 = index;
+		while(!scrambleGrid[index][column].equals(" ")) {
+			index++;
 		}
-		
-		Collections.shuffle(columnChars);
-		
-		for(int i = 0; i<DropNFloatQuotePreferences.DROP_ROWS; i++) {
-			dropScrambleGrid[i][column] = columnChars.get(i);
-		}	
-	}
-	
-	private void dropColumn(int column) {
-		int cell1, cell2;
-		while(!dropColumnInOrder(column)) {
-			cell1 = DropNFloatQuotePreferences.DROP_ROWS-1;
-			cell2 = 0;
-			while(!dropScrambleGrid[cell1][column].equals(" ")) {
-				cell1--;
-			}
-			while(dropScrambleGrid[cell2][column].equals(" ")) {
-				cell2++;
-			}
-			swapCell(column, cell1, cell2, dropScrambleGrid);
-		}
+		cell2 = index;
+		swapCell(column, cell1, cell2);
 	}
 	
 	private void floatColumn(int column) {
+		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
 		int cell1, cell2;
 		while(!floatColumnInOrder(column)) {
 			cell1 = 0;
-			cell2 = DropNFloatQuotePreferences.FLOAT_ROWS-1;
-			while(!floatScrambleGrid[cell1][column].equals(" ")) {
+			cell2 = totalRowCount-1;
+			while(!scrambleGrid[cell1][column].equals(" ")) {
 				cell1++;
 			}
-			while(floatScrambleGrid[cell2][column].equals(" ")) {
+			while(scrambleGrid[cell2][column].equals(" ")) {
 				cell2--;
 			}
-			swapCell(column, cell1, cell2, floatScrambleGrid);
+			swapCell(column, cell1, cell2);
 		}
 	}
 	
 	private boolean floatColumnInOrder(int column) {
 		boolean result = true;
-		
-		String currentCell = floatScrambleGrid[0][column];
-		for(int i = 2; i<=DropNFloatQuotePreferences.FLOAT_ROWS; i++) {
-			String nextCell = floatScrambleGrid[i-1][column];
+		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
+		String currentCell = scrambleGrid[0][column];
+		for(int i = 2; i<=totalRowCount; i++) {
+			String nextCell = scrambleGrid[i-1][column];
 			if(currentCell.equals(" ")) {
 				if(!nextCell.equals(" "))
 					result = false;
@@ -189,22 +185,17 @@ public class DropNFloatQuote {
 		return result;
 	}
 	
-	private boolean dropColumnInOrder(int column) {
-		boolean result = true;
-		
-		String currentCell = dropScrambleGrid[DropNFloatQuotePreferences.DROP_ROWS-1][column];
-		for(int i = 2; i<=DropNFloatQuotePreferences.DROP_ROWS; i++) {
-			String nextCell = dropScrambleGrid[DropNFloatQuotePreferences.DROP_ROWS-i][column];
-			if(currentCell.equals(" ")) {
-				if(!nextCell.equals(" "))
-					result = false;
-			}
-			currentCell = nextCell;
+	private int getSpacesCount(int i) {
+		int spacesCount = 0;
+		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
+		for(int j = 0; j<totalRowCount; j++) {
+			if(scrambleGrid[j][i].equals(" "))
+				spacesCount++;
 		}
-		return result;
+		return spacesCount;
 	}
 
-	private void swapCell(int column, int row1, int row2, String[][] scrambleGrid) {
+	private void swapCell(int column, int row1, int row2) {
 		String temp = scrambleGrid[row1][column];
 		scrambleGrid[row1][column] = scrambleGrid[row2][column];
 		scrambleGrid[row2][column] = temp;
@@ -216,83 +207,57 @@ public class DropNFloatQuote {
 		DropNFloatQuotePreferences.FLOAT_LENGTH = logicalChars1.size();
 		DropNFloatQuotePreferences.DROP_LENGTH = logicalChars2.size();
 
-		if(DropNFloatQuotePreferences.FLOAT_LENGTH>48) {
-			DropNFloatQuotePreferences.FLOAT_CELL_COUNT = 60.0;
-			DropNFloatQuotePreferences.FLOAT_ROWS = 6;
-			DropNFloatQuotePreferences.COLUMNS = 10;
-			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 60;
-			
-			DropNFloatQuotePreferences.DROP_ROWS = 1;
-			while(DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS<DropNFloatQuotePreferences.DROP_LENGTH) {
-				DropNFloatQuotePreferences.DROP_ROWS++;
-			}
-			DropNFloatQuotePreferences.DROP_CELL_COUNT = DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS;
-			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 60;
-			
-		} else if(DropNFloatQuotePreferences.FLOAT_LENGTH>42) {
-			DropNFloatQuotePreferences.FLOAT_CELL_COUNT = 48.0;
-			DropNFloatQuotePreferences.FLOAT_ROWS = 6;
-			DropNFloatQuotePreferences.COLUMNS = 8;
-			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 80;
-			
-			DropNFloatQuotePreferences.DROP_ROWS = 1;
-			while(DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS<DropNFloatQuotePreferences.DROP_LENGTH) {
-				DropNFloatQuotePreferences.DROP_ROWS++;
-			}
-			DropNFloatQuotePreferences.DROP_CELL_COUNT = DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS;
-			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 80;
-			
-		} else if(DropNFloatQuotePreferences.FLOAT_LENGTH>30) {
-			DropNFloatQuotePreferences.FLOAT_CELL_COUNT = 42.0;
-			DropNFloatQuotePreferences.FLOAT_ROWS = 6;
-			DropNFloatQuotePreferences.COLUMNS = 7;
-			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 90;
-			
-			DropNFloatQuotePreferences.DROP_ROWS = 1;
-			while(DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS<DropNFloatQuotePreferences.DROP_LENGTH) {
-				DropNFloatQuotePreferences.DROP_ROWS++;
-			}
-			DropNFloatQuotePreferences.DROP_CELL_COUNT = DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS;
-			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 90;
-			
-		} else if(DropNFloatQuotePreferences.FLOAT_LENGTH>24) {
+		if(DropNFloatQuotePreferences.FLOAT_LENGTH>24) {
 			DropNFloatQuotePreferences.FLOAT_CELL_COUNT = 30.0;
 			DropNFloatQuotePreferences.FLOAT_ROWS = 5;
 			DropNFloatQuotePreferences.COLUMNS = 6;
-			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 100;
+			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 105;
 			
 			DropNFloatQuotePreferences.DROP_ROWS = 1;
 			while(DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS<DropNFloatQuotePreferences.DROP_LENGTH) {
 				DropNFloatQuotePreferences.DROP_ROWS++;
 			}
 			DropNFloatQuotePreferences.DROP_CELL_COUNT = DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS;
-			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 100;
+			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 105;
 			
 		} else if(DropNFloatQuotePreferences.FLOAT_LENGTH>15) {
 			DropNFloatQuotePreferences.FLOAT_CELL_COUNT = 24.0;
 			DropNFloatQuotePreferences.FLOAT_ROWS = 4;
 			DropNFloatQuotePreferences.COLUMNS = 6;
-			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 100;
+			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 105;
 			
 			DropNFloatQuotePreferences.DROP_ROWS = 1;
 			while(DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS<DropNFloatQuotePreferences.DROP_LENGTH) {
 				DropNFloatQuotePreferences.DROP_ROWS++;
 			}
 			DropNFloatQuotePreferences.DROP_CELL_COUNT = DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS;
-			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 100;
+			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 105;
+			
+		} else if(DropNFloatQuotePreferences.FLOAT_LENGTH>9) {
+			DropNFloatQuotePreferences.FLOAT_CELL_COUNT = 15.0;
+			DropNFloatQuotePreferences.FLOAT_ROWS = 3;
+			DropNFloatQuotePreferences.COLUMNS = 5;
+			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 130;
+			
+			DropNFloatQuotePreferences.DROP_ROWS = 1;
+			while(DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS<DropNFloatQuotePreferences.DROP_LENGTH) {
+				DropNFloatQuotePreferences.DROP_ROWS++;
+			}
+			DropNFloatQuotePreferences.DROP_CELL_COUNT = DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS;
+			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 130;
 			
 		} else {
-			DropNFloatQuotePreferences.FLOAT_CELL_COUNT = 2.0;
-			DropNFloatQuotePreferences.FLOAT_ROWS = 1;
-			DropNFloatQuotePreferences.COLUMNS = 2;
-			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 280;
+			DropNFloatQuotePreferences.FLOAT_CELL_COUNT = 9.0;
+			DropNFloatQuotePreferences.FLOAT_ROWS = 3;
+			DropNFloatQuotePreferences.COLUMNS = 3;
+			DropNFloatQuotePreferences.FLOAT_CELL_WIDTH = 210;
 			
 			DropNFloatQuotePreferences.DROP_ROWS = 1;
 			while(DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS<DropNFloatQuotePreferences.DROP_LENGTH) {
 				DropNFloatQuotePreferences.DROP_ROWS++;
 			}
 			DropNFloatQuotePreferences.DROP_CELL_COUNT = DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS;
-			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 280;
+			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 210;
 		}
 			
 	}
@@ -306,6 +271,6 @@ public class DropNFloatQuote {
 	}
 	
 	public String[][] getFinalScrambleGrid() {
-		return finalScrambleGrid;
+		return scrambleGrid;
 	}
 }

@@ -20,7 +20,8 @@ public class DropQuotePreferences {
 	public final static int PUZZLE_COUNT = 5;
 	public final static int STARTING_X = 40;
 	public final static int STARTING_Y = 80;
-	public final static int LENGTH_LIMIT = 30;
+	public final static int LENGTH_MAX = 50;
+	public final static int LENGTH_MIN = 10;
 	public static int LENGTH;
 	public static int ROWS;
 	public static int COLUMNS;
