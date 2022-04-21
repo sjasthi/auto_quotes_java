@@ -33,7 +33,12 @@ public class StripperQuote {
 	private void generateLogicalChars(String quote) throws UnsupportedEncodingException, SQLException {
 		int index = 0;
 		int rows = 1;
-		ArrayList<String> tempList = api.getLogicalChars(quote);
+		
+		String newQuote = quote.trim();
+		StripperQuotePreferences.LENGTH = api.getLength(newQuote);
+		ArrayList<String> tempList = api.getLogicalChars(newQuote);
+		
+		//removing duplicate spaces
 		String prevChar = tempList.get(0);
 		logicalChars.add(prevChar);
 		for(int i = 1; i<tempList.size(); i++) {
@@ -42,20 +47,13 @@ public class StripperQuote {
 				index++;
 			}
 			
-			if(index>StripperQuotePreferences.COLUMNS) {
+			if(index>=StripperQuotePreferences.COLUMNS) {
 				rows++;
 				index = 0;
 			}
 			prevChar = tempList.get(i);
 		}
 		
-		while(logicalChars.get(0).equals(" ")) {
-			logicalChars.remove(0);
-		}
-		
-		while(logicalChars.get(logicalChars.size()-1).equals(" ")) {
-			logicalChars.remove(logicalChars.size()-1);
-		}
 		StripperQuotePreferences.ROWS = rows;
 	}
 

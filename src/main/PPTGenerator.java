@@ -42,7 +42,7 @@ import preferences.StripperQuotePreferences;
 
 public class PPTGenerator {
 
-	private File quotes = new File("Test.txt");
+	private File quotes = new File("Test2.txt");
 	private static String PPT_FILE_NAME;
 	private API api = new API();
 	
@@ -63,7 +63,7 @@ public class PPTGenerator {
 
 		for(int n = 0; n<SplitQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = lengthCheck(scan, SplitQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, SplitQuotePreferences.LENGTH_MAX, SplitQuotePreferences.LENGTH_MIN);
 			SplitQuote puzzle = new SplitQuote(quote);
 			String[][] grid = puzzle.getPuzzleGrid();
 
@@ -128,12 +128,12 @@ public class PPTGenerator {
 
 		for(int n = 0; n<SplitQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = lengthCheck(scan, SplitQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, SplitQuotePreferences.LENGTH_MAX, SplitQuotePreferences.LENGTH_MIN);
 			SplitQuote puzzle = new SplitQuote(quote);
 			String[][] grid = puzzle.getSolutionGrid();
 
 			HSLFSlide slide = ppt.createSlide();
-			String title_name = "Split Quote Solution";
+			String title_name = SplitQuotePreferences.TITLE+" Solution";
 			createTitle(slide, title_name, SplitQuotePreferences.FONT_NAME, SplitQuotePreferences.TITLE_FONT_SIZE, SplitQuotePreferences.TITLE_COLOR);
 			createLogo(ppt, slide);
 
@@ -187,7 +187,7 @@ public class PPTGenerator {
 		//Repeat all this for each puzzle
 		for(int n = 0; n<DropQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = lengthCheck(scan, DropQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, DropQuotePreferences.LENGTH_MAX, DropQuotePreferences.LENGTH_MIN);
 			DropQuote puzzle = new DropQuote(quote);
 			String[][] grid = puzzle.getScrambleGrid();
 
@@ -296,10 +296,10 @@ public class PPTGenerator {
 		int puzzle_slide_no = 1;
 
 		for(int n = 0; n<DropQuotePreferences.PUZZLE_COUNT; n++) {
-			String quote = lengthCheck(scan, DropQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, DropQuotePreferences.LENGTH_MAX, DropQuotePreferences.LENGTH_MIN);
 			DropQuote puzzle = new DropQuote(quote);			
 			HSLFSlide slide = ppt.createSlide();
-			String title_name = "Drop Quote Solution";
+			String title_name = DropQuotePreferences.TITLE+" Solution";
 			createTitle(slide, title_name, DropQuotePreferences.FONT_NAME, DropQuotePreferences.TITLE_FONT_SIZE, DropQuotePreferences.TITLE_COLOR);
 			createLogo(ppt, slide);
 
@@ -370,7 +370,7 @@ public class PPTGenerator {
 		//Repeat all this for each puzzle
 		for(int n = 0; n<FloatQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = lengthCheck(scan, FloatQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, FloatQuotePreferences.LENGTH_MAX, FloatQuotePreferences.LENGTH_MIN);
 			FloatQuote puzzle = new FloatQuote(quote);
 			String[][] grid = puzzle.getPuzzleGrid();
 
@@ -480,10 +480,10 @@ public class PPTGenerator {
 		int puzzle_slide_no = 1;
 
 		for(int n = 0; n<FloatQuotePreferences.PUZZLE_COUNT; n++) {
-			String quote = lengthCheck(scan, FloatQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, FloatQuotePreferences.LENGTH_MAX, FloatQuotePreferences.LENGTH_MIN);
 			FloatQuote puzzle = new FloatQuote(quote);			
 			HSLFSlide slide = ppt.createSlide();
-			String title_name = "Float Quote Solution";
+			String title_name = FloatQuotePreferences.TITLE+" Solution";
 			createTitle(slide, title_name, FloatQuotePreferences.FONT_NAME, FloatQuotePreferences.TITLE_FONT_SIZE, FloatQuotePreferences.TITLE_COLOR);
 			createLogo(ppt, slide);
 
@@ -556,7 +556,7 @@ public class PPTGenerator {
 
 		for(int n = 0; n<StripperQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = lengthCheck(scan, StripperQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, StripperQuotePreferences.LENGTH_MAX, StripperQuotePreferences.LENGTH_MIN);
 			StripperQuote puzzle = new StripperQuote(quote);
 			yOffSet = 0;
 
@@ -665,13 +665,13 @@ public class PPTGenerator {
 		String char_string;
 
 		for(int n = 0; n<StripperQuotePreferences.PUZZLE_COUNT; n++) {
-			String quote = lengthCheck(scan, StripperQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, StripperQuotePreferences.LENGTH_MAX, StripperQuotePreferences.LENGTH_MIN);
 			StripperQuote puzzle = new StripperQuote(quote);
 
 			int yOffSet = 30;
 
 			HSLFSlide slide = ppt.createSlide();
-			String title_name = "Stripper Quote Solution";
+			String title_name = StripperQuotePreferences.TITLE+" Solution";
 			createTitle(slide, title_name, StripperQuotePreferences.FONT_NAME, StripperQuotePreferences.TITLE_FONT_SIZE, StripperQuotePreferences.TITLE_COLOR);
 			createLogo(ppt, slide);
 
@@ -738,7 +738,7 @@ public class PPTGenerator {
 
 		for(int n = 0; n<ScrambleQuotePreferences.PUZZLE_COUNT; n++) {
 
-			String quote = lengthCheck(scan, ScrambleQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, ScrambleQuotePreferences.LENGTH_MAX, ScrambleQuotePreferences.LENGTH_MIN);
 			ScrambleQuote puzzle = new ScrambleQuote(quote);
 			int yOffSet = 0;
 
@@ -845,13 +845,13 @@ public class PPTGenerator {
 		String char_string;
 
 		for(int n = 0; n<ScrambleQuotePreferences.PUZZLE_COUNT; n++) {
-			String quote = lengthCheck(scan, ScrambleQuotePreferences.LENGTH_LIMIT);
+			String quote = lengthCheck(scan, ScrambleQuotePreferences.LENGTH_MAX, ScrambleQuotePreferences.LENGTH_MIN);
 			ScrambleQuote puzzle = new ScrambleQuote(quote);
 
 			int yOffSet = 30;
 
 			HSLFSlide slide = ppt.createSlide();
-			String title_name = "Scramble Quote Solution";
+			String title_name = ScrambleQuotePreferences.TITLE+" Solution";
 			createTitle(slide, title_name, ScrambleQuotePreferences.FONT_NAME, ScrambleQuotePreferences.TITLE_FONT_SIZE, ScrambleQuotePreferences.TITLE_COLOR);
 			createLogo(ppt, slide);
 
@@ -915,8 +915,8 @@ public class PPTGenerator {
 		
 		for(int n = 0; n<DropNFloatQuotePreferences.PUZZLE_COUNT; n++) {		
 			
-			String quote1 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_LIMIT);
-			String quote2 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_LIMIT);
+			String quote1 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_MAX, DropNFloatQuotePreferences.LENGTH_MIN);
+			String quote2 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_MAX, DropNFloatQuotePreferences.LENGTH_MIN);
 			DropNFloatQuote puzzle = new DropNFloatQuote(quote1, quote2);
 			
 			int yOffSet = 0;
@@ -1082,14 +1082,14 @@ public class PPTGenerator {
 		for(int n = 0; n<DropNFloatQuotePreferences.PUZZLE_COUNT; n++) {
 			
 			
-			String quote1 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_LIMIT);
-			String quote2 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_LIMIT);
+			String quote1 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_MAX, DropNFloatQuotePreferences.LENGTH_MIN);
+			String quote2 = lengthCheck(scan, DropNFloatQuotePreferences.LENGTH_MAX, DropNFloatQuotePreferences.LENGTH_MIN);
 			DropNFloatQuote puzzle = new DropNFloatQuote(quote1, quote2);
 			
 			int yOffSet = 0;
 
 			HSLFSlide slide = ppt.createSlide();
-			createTitle(slide, "Drop N Float Solution", DropNFloatQuotePreferences.FONT_NAME, DropNFloatQuotePreferences.TITLE_FONT_SIZE, DropNFloatQuotePreferences.TITLE_COLOR);
+			createTitle(slide, DropNFloatQuotePreferences.TITLE+" Solution", DropNFloatQuotePreferences.FONT_NAME, DropNFloatQuotePreferences.TITLE_FONT_SIZE, DropNFloatQuotePreferences.TITLE_COLOR);
 			createLogo(ppt, slide);
 
 			//creating the float grid
@@ -1206,10 +1206,10 @@ public class PPTGenerator {
 			return false;
 	}
 	
-	private String lengthCheck(Scanner scan, int limit) throws UnsupportedEncodingException {
+	private String lengthCheck(Scanner scan, int max, int min) throws UnsupportedEncodingException {
 		String quote = scan.nextLine();
 		int length = api.getLength(quote);
-		while(length>limit) {
+		while(length>max || length<min) {
 			quote = scan.nextLine();
 			length = api.getLength(quote);
 		}

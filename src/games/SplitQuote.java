@@ -55,8 +55,8 @@ public class SplitQuote {
 				currentChunk += tempArray.remove(0);
 			}
 			chunks.add(currentChunk);
+			SplitQuotePreferences.CELL_COUNT++;
 		}
-		
 	}
 
 
@@ -111,29 +111,23 @@ public class SplitQuote {
 	}
 
 	public void checkParams(String quote) throws UnsupportedEncodingException, SQLException {
+		String newQuote = quote.trim();
+		
 		if(SplitQuotePreferences.HAS_SPACES) {
-			if(SplitQuotePreferences.HAS_PUNCTUATION) {
-				logicalChars = api.getLogicalChars(quote);
+			if(SplitQuotePreferences.HAS_PUNCTUATION) {			
+				logicalChars = api.getLogicalChars(newQuote);
 			} else {
-				logicalChars = api.getLogicalChars(removePunctuation(quote));
+				logicalChars = api.getLogicalChars(removePunctuation(newQuote));
 			}
 		} else {
 			if(SplitQuotePreferences.HAS_PUNCTUATION) {
-				logicalChars = api.getLogicalChars(removeSpaces(quote));
+				logicalChars = api.getLogicalChars(removeSpaces(newQuote));
 			} else {
-				logicalChars = api.getLogicalChars(removeSpaces(removePunctuation(quote)));
+				logicalChars = api.getLogicalChars(removeSpaces(removePunctuation(newQuote)));
 			}
 		}
 		
-		while(logicalChars.get(0).equals(" ")) {
-			logicalChars.remove(0);
-		}
-		
-		while(logicalChars.get(logicalChars.size()-1).equals(" ")) {
-			logicalChars.remove(logicalChars.size()-1);
-		}
-		
-		SplitQuotePreferences.LENGTH = logicalChars.size();
+		SplitQuotePreferences.LENGTH = api.getLength(newQuote);
 	}
 	
 	

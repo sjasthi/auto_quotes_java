@@ -38,7 +38,6 @@ public class DropQuote {
 	
 	private void initializeCellCount(String quote) throws UnsupportedEncodingException, SQLException {
 		removePunctuation(quote);
-		DropQuotePreferences.LENGTH = logicalChars.size();
 		DropQuotePreferences.CELL_COUNT = 0.0;
 		if(DropQuotePreferences.LENGTH>48) {
 			DropQuotePreferences.CELL_COUNT = 60.0;
@@ -102,7 +101,10 @@ public class DropQuote {
 	}
 	
 	private void removePunctuation(String quote) throws UnsupportedEncodingException, SQLException {
-		ArrayList<String> tempList = api.getLogicalChars(quote);
+		String newQuote = quote.trim();
+		ArrayList<String> tempList = api.getLogicalChars(newQuote);
+		DropQuotePreferences.LENGTH = api.getLength(newQuote);
+		
 		ArrayList<String> punctuation = new ArrayList<String>();
 		punctuation.add("'");
 		punctuation.add(".");
