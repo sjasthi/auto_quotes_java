@@ -7,16 +7,17 @@ import java.util.Collections;
 import main.API;
 import preferences.SplitQuotePreferences;
 
+/**
+ * @author neilh
+ * This class receives a quote and generates a puzzle grid and solution grid of the type split quote
+ */
 
-public class SplitQuote {
-	
-	
+public class SplitQuote {	
 	private API api = new API();
 	private ArrayList<String> logicalChars;
 	private ArrayList<String> chunks = new ArrayList<String>();
 	private String[][] solutionGrid;
 	private String[][] puzzleGrid;
-	
 	
 	public SplitQuote(String quote) throws SQLException, IOException {
 		checkParams(quote);
@@ -26,8 +27,7 @@ public class SplitQuote {
 		buildPuzzleGrid();
 	}
 	
-	
-	
+	//this method splits the characters into chunks based on the chunk size
 	private void createChunks() {
 		ArrayList<String> tempArray = logicalChars;
 		String currentChunk;
@@ -59,7 +59,7 @@ public class SplitQuote {
 		}
 	}
 
-
+	//method builds the solution grid
 	public void buildSolutionGrid() {
 		int rows = (int) Math.round(SplitQuotePreferences.CELL_COUNT/SplitQuotePreferences.COLUMNS);
 		double remainder = SplitQuotePreferences.CELL_COUNT%SplitQuotePreferences.COLUMNS;
@@ -81,20 +81,10 @@ public class SplitQuote {
 					solutionGrid[i][n] = "";
 				}
 			}
-		}
-		
-		/*
-		for(int i = 0; i<SplitQuotePreferences.ROWS; i++) {
-			for(int n = 0; n<SplitQuotePreferences.COLUMNS; n++) {
-				System.out.print(solutionGrid[i][n]);
-				
-			}
-			System.out.print("\n");
-		}
-		*/
-		
+		}		
 	}
 	
+	//method builds the grid for the puzzle to be solved
 	public void buildPuzzleGrid() {
 		Collections.shuffle(chunks);
 		int index = 0;
@@ -110,6 +100,7 @@ public class SplitQuote {
 		}
 	}
 
+	//method checks the parameters and modifies the arraylist accordingly
 	public void checkParams(String quote) throws UnsupportedEncodingException, SQLException {
 		String newQuote = quote.trim();
 		
@@ -127,11 +118,10 @@ public class SplitQuote {
 			}
 		}
 		
-		SplitQuotePreferences.LENGTH = api.getLength(newQuote);
+		SplitQuotePreferences.LENGTH = logicalChars.size();
 	}
 	
-	
-	
+	//given a string, this method returns the same string without spaces in it
 	private String removeSpaces(String quote) {
 		String newString = "";
 		int count = quote.length();
@@ -142,6 +132,7 @@ public class SplitQuote {
 		return newString;
 	}
 	
+	//given a string this method returns the same string without punctuation in it
 	private String removePunctuation(String quote) {
 		String newString = "";
 		ArrayList<String> punctuation = new ArrayList<String>();
@@ -168,10 +159,6 @@ public class SplitQuote {
 		}
 		return newString;
 	}
-	
-	
-	
-	
 	
 	public String[][] getSolutionGrid() {
 		return solutionGrid;

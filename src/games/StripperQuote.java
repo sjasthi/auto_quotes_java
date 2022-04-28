@@ -7,15 +7,11 @@ import java.util.Collections;
 import main.API;
 import preferences.StripperQuotePreferences;
 
-
-/**
- * 
- */
-
 /**
  * @author neilh
- *
+ * This class receives a quote and generates a puzzle grid and solution grid of the type stripper quote
  */
+
 public class StripperQuote {
 	
 	private String[][] bankGrid;
@@ -27,9 +23,9 @@ public class StripperQuote {
 		
 		generateLogicalChars(quote);
 		createLetterBank(quote);
-		
 	}
 
+	//method creates the logicalChars arraylist as well as initializing important variables such as row count...
 	private void generateLogicalChars(String quote) throws UnsupportedEncodingException, SQLException {
 		int index = 0;
 		int rows = 1;
@@ -57,6 +53,7 @@ public class StripperQuote {
 		StripperQuotePreferences.ROWS = rows;
 	}
 
+	//method creates the arraylist used for the clue portion of the puzzle
 	private void createLetterBank(String quote) throws UnsupportedEncodingException, SQLException {
 		baseChars = api.getBaseChars(quote);
 		
@@ -77,7 +74,6 @@ public class StripperQuote {
 			}
 		}
 	}
-	 
 
 	public String[][] getBankGrid() {
 		return bankGrid;
@@ -86,5 +82,4 @@ public class StripperQuote {
 	public ArrayList<String> getLogicalChars(){
 		return logicalChars;
 	}
-	
 }
