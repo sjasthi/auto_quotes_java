@@ -7,15 +7,11 @@ import java.util.Collections;
 import main.API;
 import preferences.ScrambleQuotePreferences;
 
-
-/**
- * 
- */
-
 /**
  * @author neilh
- *
+ * This class receives a quote and generates a puzzle grid and solution grid of the type scramble quote
  */
+
 public class ScrambleQuote {
 	
 	private String[][] bankGrid;
@@ -30,6 +26,7 @@ public class ScrambleQuote {
 		
 	}
 
+	//this method assembles the logicalChars arraylist as well as initializing important variables such as row count...
 	private void generateLogicalChars(String quote) throws UnsupportedEncodingException, SQLException {
 		int index = 0;
 		int rows = 1;
@@ -56,6 +53,7 @@ public class ScrambleQuote {
 		ScrambleQuotePreferences.ROWS = rows;
 	}
 
+	//this method assembles the arraylist for the clue part of the puzzle
 	private void createLetterBank() throws UnsupportedEncodingException, SQLException {
 		for(int i = 0; i<logicalChars.size(); i++) {
 			if(isValid(logicalChars.get(i).charAt(0))) {
@@ -74,13 +72,11 @@ public class ScrambleQuote {
 					index++;
 				} else {
 					bankGrid[i][j] = " ";
-				}
-				
+				}		
 			}
 		}
 	}
 	
-
 	public String[][] getBankGrid() {
 		return bankGrid;
 	}
@@ -90,8 +86,9 @@ public class ScrambleQuote {
 		return logicalChars;
 	}
 
+	//method checks if a given char is a space/punctuation mark or not and returns true or false
 	private boolean isValid(char a) {
-		if(a==' ' || a=='!' || a=='.' || a==',' || a=='?')
+		if(a==' ' || a=='!' || a=='.' || a==',' || a=='?' || a==';')
 			return false;
 		else
 			return true;

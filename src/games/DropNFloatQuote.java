@@ -8,6 +8,10 @@ import java.util.Collections;
 import main.API;
 import preferences.DropNFloatQuotePreferences;
 
+/**
+ * @author Neil Haggerty This class generates the grids for the drop n float puzzle.        
+ */
+
 public class DropNFloatQuote {
 	private String[][] floatGrid;
 	private String[][] dropGrid;
@@ -27,9 +31,39 @@ public class DropNFloatQuote {
 		buildFloatGrid();
 		buildDropGrid();
 		buildScrambleGrid();
-			
+		finalizeRows();
 	}
 	
+	//this method removes any empty rows from the final scrambled grid
+	private void finalizeRows() {
+		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
+		int rows = totalRowCount;
+		for(int i = 0; i<totalRowCount; i++) {
+			if(rowIsEmpty(i)) {
+				rows--;
+			}
+		}
+		String[][] newScrambleGrid = new String[rows][DropNFloatQuotePreferences.COLUMNS];
+		for(int i = 0; i<rows; i++) {
+			for(int j = 0; j<DropNFloatQuotePreferences.COLUMNS; j++) {
+				newScrambleGrid[i][j] = scrambleGrid[i][j];
+			}
+		}
+		DropNFloatQuotePreferences.TOTAL_ROWS = rows;
+		scrambleGrid = newScrambleGrid;
+	}
+
+	//method checks if a given row of a grid is empty and returns true or false
+	private boolean rowIsEmpty(int row) {
+		boolean result = true;
+		for(int i = 0; i<DropNFloatQuotePreferences.COLUMNS; i++) {
+			if(!scrambleGrid[row][i].equals(" "))
+				result = false;
+		}
+		return result;
+	}
+
+	//method removes punctuation and returns the updated ArrayList
 	private ArrayList<String> removePunctuation(String quote) throws UnsupportedEncodingException, SQLException {
 		String newQuote = quote.trim();
 		ArrayList<String> tempList = api.getLogicalChars(newQuote);
@@ -60,6 +94,7 @@ public class DropNFloatQuote {
 		return tempList;
 	}
 	
+	//method creates the puzzle grid displayed at the top of the slide
 	private void buildFloatGrid() {
 		int index = 0;
 		for(int i = 0; i<DropNFloatQuotePreferences.FLOAT_ROWS; i++) {
@@ -74,6 +109,7 @@ public class DropNFloatQuote {
 		}
 	}
 	
+	//method creates the puzzle grid displayed at the bottom of the slide
 	private void buildDropGrid() {
 		int index = 0;
 		for(int i = 0; i<DropNFloatQuotePreferences.DROP_ROWS; i++) {
@@ -88,6 +124,7 @@ public class DropNFloatQuote {
 		}
 	}
 	
+	//method creates the clue grid displayed in the center of the slide
 	private void buildScrambleGrid() {
 		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
 		
@@ -107,6 +144,7 @@ public class DropNFloatQuote {
 		sortColumns();
 	}
 	
+	//method randomizes the elements of a given column
 	private void randomizeColumns() {
 		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
 		ArrayList<String> currentColumn;
@@ -122,6 +160,7 @@ public class DropNFloatQuote {
 		}
 	}
 	
+	//method that arranges the elements of the clue grid in the desired way
 	private void sortColumns() {
 		int spacesCount;
 		int half;
@@ -137,6 +176,7 @@ public class DropNFloatQuote {
 		}
 	}
 	
+	//method takes an empty cell and moves it to the top of a column
 	private void moveToTop(int column) {
 		int cell1;
 		int cell2;
@@ -154,6 +194,7 @@ public class DropNFloatQuote {
 		swapCell(column, cell1, cell2);
 	}
 	
+	//method moves all non empty cells to the top of the grid, and all spaces to the bottom
 	private void floatColumn(int column) {
 		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
 		int cell1, cell2;
@@ -170,6 +211,7 @@ public class DropNFloatQuote {
 		}
 	}
 	
+	//method checks if a given column is in the correct format and returns true or false
 	private boolean floatColumnInOrder(int column) {
 		boolean result = true;
 		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
@@ -185,6 +227,7 @@ public class DropNFloatQuote {
 		return result;
 	}
 	
+	//method counts the number of spaces in a given column and returns that number
 	private int getSpacesCount(int i) {
 		int spacesCount = 0;
 		int totalRowCount = DropNFloatQuotePreferences.DROP_ROWS + DropNFloatQuotePreferences.FLOAT_ROWS;
@@ -195,12 +238,14 @@ public class DropNFloatQuote {
 		return spacesCount;
 	}
 
+	//given two cells in a column, this method swaps the values of those cells
 	private void swapCell(int column, int row1, int row2) {
 		String temp = scrambleGrid[row1][column];
 		scrambleGrid[row1][column] = scrambleGrid[row2][column];
 		scrambleGrid[row2][column] = temp;
 	}
 	
+	//this method initializes the variables based on the length of the quotes
 	private void initializeCellCount(String quote1, String quote2) throws UnsupportedEncodingException, SQLException {
 		logicalChars1 = removePunctuation(quote1);
 		logicalChars2 = removePunctuation(quote2);
@@ -258,8 +303,7 @@ public class DropNFloatQuote {
 			}
 			DropNFloatQuotePreferences.DROP_CELL_COUNT = DropNFloatQuotePreferences.DROP_ROWS*DropNFloatQuotePreferences.COLUMNS;
 			DropNFloatQuotePreferences.DROP_CELL_WIDTH = 210;
-		}
-			
+		}		
 	}
 	
 	public String[][] getFloatGrid() {
